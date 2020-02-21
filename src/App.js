@@ -154,8 +154,8 @@ async function GetPhoto(tag) {
 
  function Plan({city, photo, startDate, endDate}) {
   return <div className='trip-card'>
+    <img src = "https://www.petmd.com/sites/default/files/Senior-Cat-Care-2070625.jpg" className = "trip-picture"/>
     <div className='trip-text-box'>
-      <img src = "https://www.petmd.com/sites/default/files/Senior-Cat-Care-2070625.jpg" className = "trip-picture"/>
       {console.log("hello")}
       <div className='trip-text'>
         <h1>{city}</h1>
