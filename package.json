@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^7.2.1",
     "argon-design-system-free": "^1.1.0",
     "bootstrap": "^4.4.1",
+    "firebase": "^7.8.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.3.1",
@@ -33,5 +34,18 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "main": "index.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johanlia000/PairUp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/johanlia000/PairUp/issues"
+  },
+  "homepage": "https://github.com/johanlia000/PairUp#readme"
 }
