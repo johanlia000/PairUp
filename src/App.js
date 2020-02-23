@@ -1,21 +1,31 @@
-import React, {useState} from "react"
+import React, {useState, useEffect} from 'react';
+import './App.css';
 import "./App.css"
-import { Button } from "reactstrap"
+
 // reactstrap components
 import {
   FormGroup,
+  Button,
   Input,
   InputGroupAddon,
   InputGroupText,
-  InputGroup
-} from "reactstrap"
+  InputGroup,
+  Card,
+  CardHeader,
+  CardBody,
+  Form,
+  Modal,
+} from "reactstrap";
 import * as firebase from "firebase/app"
 import "firebase/storage"
 import { db, queryPlans } from './db'
 import "firebase/analytics"
+import "firebase/auth";
 
 
 function App() {
+
+
   return (
     <div className="App">
       <Header />
@@ -25,8 +35,88 @@ function App() {
   );
 }
 
+function LoginButton(){
+  const [modalOpen, setModalOpen] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-function Header() {
+  function login(){
+    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+      console.log(error)
+    });    
+  }
+  return <div>
+    <Button
+      block
+      color="secondary"
+      type="button"
+      onClick={() => setModalOpen(true)}
+    >
+      Login
+    </Button>
+    <Modal
+      className="modal-dialog-centered"
+      size="sm"
+      isOpen={modalOpen}
+      toggle={() => setModalOpen(!modalOpen)}
+    >
+      <div className="modal-body p-0">
+        <Card className="bg-secondary shadow border-0">
+ 
+          <CardBody className="px-lg-5 py-lg-5 cardBody">
+            <div className="signIn">
+              <small>Sign In</small>
+            </div>
+            <Form role="form">
+              <FormGroup className="mb-3">
+                <InputGroup className="input-group-alternative">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText style={{backgroundColor: "#f5365c"}}>
+                      <i className="ni ni-email-83" style={{color: "white"}}/>
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input 
+                    placeholder="Email" 
+                    type="email" 
+                    value={email} 
+                    onChange={e=> setEmail(e.target.value)}
+                    onKeyPress={e=> {
+                      if(e.key ==='Enter') {
+                          console.log(email)
+                        setEmail('')
+                      }
+                    }}
+                  />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText style={{backgroundColor: "#f5365c"}}>
+                      <i className="ni ni-lock-circle-open" style={{color: "white"}}/>
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input placeholder="Password" type="password" />
+                </InputGroup>
+              </FormGroup>
+              <div className="text-center">
+                <Button
+                  className="my-4"
+                  color="info"
+                  type="button"
+                >
+                  Sign in
+                </Button>
+              </div>
+            </Form>
+          </CardBody>
+        </Card>
+      </div>
+    </Modal>
+  </div>
+}
+
+function Header(props) {
   return <div className='header'>
     <div className = "left-header">
       <div className='logo'>
@@ -36,7 +126,8 @@ function Header() {
     </div>
 
     <div className="right-header">
-      <Button 
+      <LoginButton/>
+      {/* <Button 
         className="btn-icon btn-2" 
         color='info' 
         type="button"
@@ -47,7 +138,7 @@ function Header() {
           <span className="btn-inner--icon">
             <i className="ni ni-fat-add" />
           </span>
-      </Button>
+      </Button> */}
     </div>
   </div>
 }
@@ -63,6 +154,7 @@ function SearchBar(props){
   var searchTerm = ""
   var [text, setText] = useState('')
   var [searchedPlans, setPlans] = useState([])
+  var [message, setMessage] = useState(false)
  
  return <div className='search-bar'>
     <FormGroup>
@@ -76,6 +168,11 @@ function SearchBar(props){
             if(e.key ==='Enter') {
               searchTerm = text
               searchedPlans = await queryPlans(searchTerm)
+              if (searchedPlans.length === 0) {
+                setMessage(true)
+              } else {
+                setMessage(false)
+              }
               setPlans(searchedPlans)
               setText('')
             }
@@ -88,6 +185,11 @@ function SearchBar(props){
               if(text) 
                 searchTerm = text
                 searchedPlans = await queryPlans(searchTerm)
+                if (searchedPlans.length === 0) {
+                  setMessage(true)
+                } else {
+                  setMessage(false)
+                }
                 setPlans(searchedPlans)
                 setText('')
               }}
@@ -98,7 +200,8 @@ function SearchBar(props){
       </InputGroup>
     </FormGroup>
 
-    {searchedPlans && searchedPlans.length && <TripPlans searchedPlans={searchedPlans} />}
+    {!(message) && searchedPlans && searchedPlans.length && <TripPlans searchedPlans={searchedPlans} />}
+    {message && <NoTrips />}
 
   </div>
 }
@@ -140,42 +243,66 @@ async function GetPhoto(tag) {
    
  }
 
- function TripPlans({searchedPlans}) {
+ function TripPlans({searchedPlans, setMessage, message}) {
+  
   return <div className="trips">
-    {searchedPlans.map((i, city, photo, startDate, endDate)=> <Plan 
-      key={i}
-      city={searchedPlans["City"]} 
-      photo={searchedPlans["Photo"]}
-      startDate={searchedPlans["Start Date"]}
-      endDate={searchedPlans["End Date"]}
+    {searchedPlans.map((item, index)=> <Plan 
+      plan = {item}
+      key = {index}
     />)}
   </div>
  }
 
- function Plan({city, photo, startDate, endDate}) {
-  return <div className='trip-card'>
-    <img src = "https://www.petmd.com/sites/default/files/Senior-Cat-Care-2070625.jpg" className = "trip-picture"/>
+ function Plan(props) {
+  return <div className="orientation">
+    <div className='trip-card'>
+    <img src = {props.plan.Photo} className = "trip-picture"/>
     <div className='trip-text-box'>
-      {console.log("hello")}
       <div className='trip-text'>
-        <h1>{city}</h1>
+        <h1 className="city-country">{props.plan.City}, {props.plan.Country}</h1>
+        <h2 className="dates">{Date(props.plan.startDate)} - {Date(props.plan.endDate)}</h2>
       </div>
     </div>
   </div>
+  </div>
  }
 
-// function Message({m, name}){
-//   return <div className="message-wrap"
-//     from={m.name===name?'me':'you'}
-//     onClick={()=>console.log(m)}>
-//     <div className="message">
-//       <div className="msg-name">{m.name}</div>
-//       <div className="msg-text">
-//         {m.text}
-//         {m.img && <img src={bucket + m.img + suffix} alt="pic" />}
-//       </div>
-//     </div>
-//   </div>
-// }
+ function Date(date) {
+   let month = date.substring(0,2)
+   let day = date.substring(2)
+   if (month === "01") {
+     month = "January"
+   } else if (month === "02") {
+     month = "February"
+   } else if (month === "03") {
+    month = "March"
+  } else if (month === "04") {
+    month = "April"
+  } else if (month === "05") {
+    month = "May"
+  } else if (month === "06") {
+    month = "June"
+  } else if (month === "07") {
+    month = "July"
+  } else if (month === "08") {
+    month = "August"
+  } else if (month === "09") {
+    month = "September"
+  } else if (month === "10") {
+    month = "October"
+  } else if (month === "11") {
+    month = "November"
+  } else if (month === "12") {
+    month = "December"
+  }
+
+  return month + " " + day
+ }
+
+ function NoTrips() {
+   return <div className="no-trips">
+     Sorry, there are no trips matching that search criteria!
+   </div>
+ }
 
 export default App;

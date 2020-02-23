@@ -78,24 +78,35 @@ html,body,#root{
 
 
 .trips{
+  position: absolute;
+  top: 9rem;
+  left: 0;
+  overflow: auto;
+  height: 33.7rem;
+  width: 100%;
+}
+
+.orientation {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  height: 33.4rem;
-  overflow: auto;
+}
+
+@media screen and (min-width: 800px) {
+  .trips{justify-content: flex-start};
 }
 
 .trip-card{
   background-color: #d3d1d1;
   margin-top: .5rem;
-  margin-bottom: .5rem;
+  margin-bottom: 1rem;
   margin-left: 1rem;
   margin-right: 1rem;
-  height: 8rem;
+  height: 9rem;
   width: 18rem;
-
   cursor: pointer;
   position: relative;
+  border-radius: .5rem;
 }
 
 .trip-text-box{
@@ -107,10 +118,12 @@ html,body,#root{
   bottom:0px;
   left:0;
   right:0;
-  height: 3rem;
+  height: 3.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  border-bottom-left-radius: .5rem;
+  border-bottom-right-radius: .5rem;
 }
 
 .trip-text{
@@ -118,10 +131,37 @@ html,body,#root{
 }
 
 .trip-picture {
-  height: 30px;
-  width: 30px;
-  position: absolute;
-  left: 0;
-  top: 0;
+  width: 18rem;
+  height: 9rem;
+  object-fit: cover;
+  border-radius: .5rem;
 }
 
+.signIn{
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  color: #172b4d;
+}
+
+.cardBody {
+  background-color: #f4f5f7;
+  border-radius: .3rem;
+}
+
+.city-country {
+  font-size: 1.1rem;
+  position: absolute;
+  left: .75rem;
+  top: .45rem;
+  text-transform: capitalize;
+  font-weight: bold;
+}
+
+.dates {
+  font-size: .7rem;
+  text-transform: capitalize;
+  position: absolute;
+  left: .75rem;
+  top: 2.1rem;
+}
