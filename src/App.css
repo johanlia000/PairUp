@@ -78,15 +78,9 @@ html,body,#root{
 
 
 .trips{
-  position: absolute;
-  top: 9rem;
-  left: 0;
   overflow: auto;
-  height: 33.7rem;
+  height: 73vh;
   width: 100%;
-}
-
-.orientation {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
