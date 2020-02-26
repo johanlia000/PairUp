@@ -15,6 +15,11 @@ import {
   CardBody,
   Form,
   Modal,
+  Row,
+  Col,
+  ModalHeader,
+  ModalBody,
+  ModalFooter
 } from "reactstrap";
 import * as firebase from "firebase/app"
 import "firebase/storage"
@@ -155,6 +160,7 @@ function SearchBar(props){
   var [text, setText] = useState('')
   var [searchedPlans, setPlans] = useState([])
   var [message, setMessage] = useState(false)
+
  
  return <div className='search-bar'>
     <FormGroup>
@@ -254,16 +260,79 @@ async function GetPhoto(tag) {
  }
 
  function Plan(props) {
-  return <div className="orientation">
-    <div className='trip-card'>
-    <img src = {props.plan.Photo} className = "trip-picture"/>
-    <div className='trip-text-box'>
-      <div className='trip-text'>
-        <h1 className="city-country">{props.plan.City}, {props.plan.Country}</h1>
-        <h2 className="dates">{Date(props.plan.startDate)} - {Date(props.plan.endDate)}</h2>
+
+  const [showDetails, setShowDetails] = useState(false)
+
+  return <div className="overall-container">
+      <div className='trip-card'
+        onClick={() => 
+        setShowDetails(true)
+      }   
+      >
+      <img src = {props.plan.Photo} className = "trip-picture"/>
+      <div className='trip-text-box'>
+        <div className='trip-text'>
+          <h1 className="city-country">{props.plan.City}, {props.plan.Country}</h1>
+          <h2 className="dates">{Date(props.plan.startDate)} - {Date(props.plan.endDate)}</h2>
+        </div>
       </div>
     </div>
-  </div>
+    
+    {showDetails && <Modal />}
+
+    <Modal
+      className="modal-dialog-centered"
+      isOpen= {showDetails}
+      toggle={() => showDetails}
+      >
+      <div className="modal-header">
+        <h3 className="modal-title" id="modal-title-default">
+          {props.plan.City}, {props.plan.Country}
+        </h3>
+        <h4 className = "text-muted">
+          {Date(props.plan.startDate)} - {Date(props.plan.endDate)}
+        </h4>
+        <button
+          aria-label="Close"
+          className="close"
+          data-dismiss="modal"
+          type="button"
+          onClick={() => setShowDetails(false)}
+        >
+          <span aria-hidden={true}>×</span>
+        </button>
+      </div>
+      <div className="modal-body">
+        <img src={props.plan.Photo} />
+        <div className ="trip-text">
+          <h5 className = "h6">
+            <span className="key">Trip Owner: </span><span>{props.plan.Name}</span>
+          </h5>
+          <h5 className ="h6">
+          <span className="key">Preferred Contact: </span><span className="lowercase">{props.plan.PreferredContact}</span>
+          </h5>
+          <h5 className ="h6">
+          <span className="key">Planned Activities: </span><span>{Activities(props.plan.PlannedActivities)}</span>
+          </h5>
+        </div>
+      </div>
+      <div className="modal-footer">
+        <Button color="primary"
+          type="button"
+          onClick={() => setShowDetails(false)}>
+          Save changes
+        </Button>
+        <Button
+          className="ml-auto"
+          color="link"
+          data-dismiss="modal"
+          type="button"
+          onClick={() => setShowDetails(false)}
+        >
+          Close
+        </Button>
+      </div>
+    </Modal>
   </div>
  }
 
@@ -295,7 +364,6 @@ async function GetPhoto(tag) {
   } else if (month === "12") {
     month = "December"
   }
-
   return month + " " + day
  }
 
@@ -304,5 +372,13 @@ async function GetPhoto(tag) {
      Sorry, there are no trips matching that search criteria!
    </div>
  }
+
+ 
+function Activities(activityArray) {
+  console.log(activityArray)
+  return "hello"
+}
+
+
 
 export default App;
