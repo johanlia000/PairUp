@@ -291,6 +291,7 @@ function SearchBar(props){
   var searchTerm = ""
   var [text, setText] = useState('')
   var [searchedPlans, setPlans] = useState([])
+  var [message, setMessage] = useState(false)
  
  return <div className='search-bar'>
     <FormGroup>
@@ -304,6 +305,11 @@ function SearchBar(props){
             if(e.key ==='Enter') {
               searchTerm = text
               searchedPlans = await queryPlans(searchTerm)
+              if (searchedPlans.length === 0) {
+                setMessage(true)
+              } else {
+                setMessage(false)
+              }
               setPlans(searchedPlans)
               setText('')
             }
@@ -316,6 +322,11 @@ function SearchBar(props){
               if(text) 
                 searchTerm = text
                 searchedPlans = await queryPlans(searchTerm)
+                if (searchedPlans.length === 0) {
+                  setMessage(true)
+                } else {
+                  setMessage(false)
+                }
                 setPlans(searchedPlans)
                 setText('')
               }}
@@ -326,7 +337,8 @@ function SearchBar(props){
       </InputGroup>
     </FormGroup>
 
-    {searchedPlans && searchedPlans.length && <TripPlans searchedPlans={searchedPlans} />}
+    {!(message) && searchedPlans && searchedPlans.length && <TripPlans searchedPlans={searchedPlans} />}
+    {message && <NoTrips />}
 
   </div>
 }
@@ -368,29 +380,66 @@ async function GetPhoto(tag) {
    
  }
 
- function TripPlans({searchedPlans}) {
+ function TripPlans({searchedPlans, setMessage, message}) {
+  
   return <div className="trips">
-    {searchedPlans.map((i, city, photo, startDate, endDate)=> <Plan 
-      key={i}
-      city={searchedPlans["City"]} 
-      photo={searchedPlans["Photo"]}
-      startDate={searchedPlans["Start Date"]}
-      endDate={searchedPlans["End Date"]}
+    {searchedPlans.map((item, index)=> <Plan 
+      plan = {item}
+      key = {index}
     />)}
   </div>
  }
 
- function Plan({city, photo, startDate, endDate}) {
-  return <div className='trip-card'>
+ function Plan(props) {
+  return <div className="orientation">
+    <div className='trip-card'>
+    <img src = {props.plan.Photo} className = "trip-picture"/>
     <div className='trip-text-box'>
-      <img src = "https://www.petmd.com/sites/default/files/Senior-Cat-Care-2070625.jpg" className = "trip-picture"/>
-      {console.log("hello")}
       <div className='trip-text'>
-        <h1>{city}</h1>
+        <h1 className="city-country">{props.plan.City}, {props.plan.Country}</h1>
+        <h2 className="dates">{Date(props.plan.startDate)} - {Date(props.plan.endDate)}</h2>
       </div>
     </div>
   </div>
+  </div>
  }
 
+ function Date(date) {
+   let month = date.substring(0,2)
+   let day = date.substring(2)
+   if (month === "01") {
+     month = "January"
+   } else if (month === "02") {
+     month = "February"
+   } else if (month === "03") {
+    month = "March"
+  } else if (month === "04") {
+    month = "April"
+  } else if (month === "05") {
+    month = "May"
+  } else if (month === "06") {
+    month = "June"
+  } else if (month === "07") {
+    month = "July"
+  } else if (month === "08") {
+    month = "August"
+  } else if (month === "09") {
+    month = "September"
+  } else if (month === "10") {
+    month = "October"
+  } else if (month === "11") {
+    month = "November"
+  } else if (month === "12") {
+    month = "December"
+  }
+
+  return month + " " + day
+ }
+
+ function NoTrips() {
+   return <div className="no-trips">
+     Sorry, there are no trips matching that search criteria!
+   </div>
+ }
 
 export default App;

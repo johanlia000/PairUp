@@ -78,24 +78,29 @@ html,body,#root{
 
 
 .trips{
+  overflow: auto;
+  height: 73vh;
+  width: 100%;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  height: 33.4rem;
-  overflow: auto;
+}
+
+@media screen and (min-width: 800px) {
+  .trips{justify-content: flex-start};
 }
 
 .trip-card{
   background-color: #d3d1d1;
   margin-top: .5rem;
-  margin-bottom: .5rem;
+  margin-bottom: 1rem;
   margin-left: 1rem;
   margin-right: 1rem;
-  height: 8rem;
+  height: 9rem;
   width: 18rem;
-
   cursor: pointer;
   position: relative;
+  border-radius: .5rem;
 }
 
 .trip-text-box{
@@ -107,14 +112,23 @@ html,body,#root{
   bottom:0px;
   left:0;
   right:0;
-  height: 3rem;
+  height: 3.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  border-bottom-left-radius: .5rem;
+  border-bottom-right-radius: .5rem;
 }
 
 .trip-text{
   margin-top: .3rem;
+}
+
+.trip-picture {
+  width: 18rem;
+  height: 9rem;
+  object-fit: cover;
+  border-radius: .5rem;
 }
 
 .signIn{
@@ -137,3 +151,19 @@ html,body,#root{
   margin-right: .5rem;
 }
 
+.city-country {
+  font-size: 1.1rem;
+  position: absolute;
+  left: .75rem;
+  top: .45rem;
+  text-transform: capitalize;
+  font-weight: bold;
+}
+
+.dates {
+  font-size: .7rem;
+  text-transform: capitalize;
+  position: absolute;
+  left: .75rem;
+  top: 2.1rem;
+}
