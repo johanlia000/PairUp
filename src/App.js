@@ -1,6 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import './App.css';
-import "./App.css"
+import "./App.css";
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import AddIcon from '@material-ui/icons/Add';
 
 // reactstrap components
 import {
@@ -24,11 +27,23 @@ import "firebase/auth";
 
 
 function App() {
-
+  const [user, setUser] = useState(null)
+  useEffect(()=>{
+    firebase.auth().onAuthStateChanged(function(user) {
+      console.log(user)
+      if (user) {
+        setUser(user)
+      } else {
+        // No user is signed in.
+        setUser(null)
+      }
+    });
+  }, [])
+ 
 
   return (
     <div className="App">
-      <Header />
+      <Header user={user} />
       <Footer />
       <SearchBar />
     </div>
@@ -39,12 +54,46 @@ function LoginButton(){
   const [modalOpen, setModalOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  var provider = new firebase.auth.GoogleAuthProvider();
 
-  function login(){
+  // Sign up and make user on firebase with email and password
+  function signUp(){
     firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
       console.log(error)
     });    
   }
+
+  // Login with email and password
+  function loginEmail(){
+    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // ...
+    });
+  }
+
+  // Login with Google
+  function googleLogin(){
+    firebase.auth().signInWithPopup(provider).then(function(result) {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      var token = result.credential.accessToken;
+      // The signed-in user info.
+      var user = result.user;
+      // ...
+    }).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // The email of the user's account used.
+      var email = error.email;
+      // The firebase.auth.AuthCredential type that was used.
+      var credential = error.credential;
+      // ...
+    });
+  }
+
+
   return <div>
     <Button
       block
@@ -80,12 +129,6 @@ function LoginButton(){
                     type="email" 
                     value={email} 
                     onChange={e=> setEmail(e.target.value)}
-                    onKeyPress={e=> {
-                      if(e.key ==='Enter') {
-                          console.log(email)
-                        setEmail('')
-                      }
-                    }}
                   />
                 </InputGroup>
               </FormGroup>
@@ -96,16 +139,77 @@ function LoginButton(){
                       <i className="ni ni-lock-circle-open" style={{color: "white"}}/>
                     </InputGroupText>
                   </InputGroupAddon>
-                  <Input placeholder="Password" type="password" />
+                  <Input 
+                    placeholder="Password" 
+                    type="password" 
+                    value={password}
+                    onChange={e=> setPassword(e.target.value)}
+                    // onKeyPress={e=> {
+                    //   if(e.key ==='Enter' && email && password) {
+                    //     console.log(email)
+                    //     console.log(password)
+                    //     setEmail('')
+                    //     setPassword('')
+                    //     setModalOpen(false)
+                    //     login()
+                    //   }
+                    // }}
+                  />
                 </InputGroup>
               </FormGroup>
               <div className="text-center">
                 <Button
+                  className="my-4 signup-button"
+                  color="info"
+                  type="button"
+                  onClick={async ()=> {
+                    if(email && password) 
+                      console.log(email)
+                      console.log(password)
+                      setEmail('')
+                      setPassword('')
+                      setModalOpen(false)
+                      signUp() // change this to be sign up
+                  }    
+                  }
+                >
+                  Sign Up
+                </Button>
+
+                <Button
                   className="my-4"
                   color="info"
                   type="button"
+                  onClick={async ()=> {
+                    if(email && password) 
+                      console.log(email)
+                      console.log(password)
+                      setEmail('')
+                      setPassword('')
+                      setModalOpen(false)
+                      loginEmail() 
+                  }}
                 >
-                  Sign in
+                  Login
+                </Button>
+              </div>
+              <div className="text-center">
+              <Button
+                  className="my-4"
+                  color = 'primary'
+                  type="button"
+                  onClick={async ()=> {
+                    if(email && password) 
+                      console.log(email)
+                      console.log(password)
+                      setEmail('')
+                      setPassword('')
+                      setModalOpen(false)
+                      googleLogin() // calls the function given by firebase
+                  }    
+                  }
+                >
+                  Google
                 </Button>
               </div>
             </Form>
@@ -126,22 +230,55 @@ function Header(props) {
     </div>
 
     <div className="right-header">
-      <LoginButton/>
-      {/* <Button 
+      {!props.user && <LoginButton/>}
+      {props.user && <TaskBar/>}
+    </div>
+  </div>
+}
+
+function TaskBar(){
+  function logout(){
+    firebase.auth().signOut().then(function() {
+      console.log('successful logout!')
+    }).catch(function(error) {
+      console.log(error)
+    }); 
+  }
+  return <div>
+    {/* add travel plan  */}
+    <Button 
         className="btn-icon btn-2" 
         color='info' 
         type="button"
         onClick={()=> {
-          console.log('clicked + button')
+          console.log('clicked + button to add plan')
         }}
       >
           <span className="btn-inner--icon">
-            <i className="ni ni-fat-add" />
+            <AddCircleOutlineIcon/>
+            {/* <AddIcon/> */}
+            
           </span>
-      </Button> */}
-    </div>
+      </Button>
+
+      {/* logout button */}
+      <Button 
+        className="btn-icon btn-2 logout" 
+        color='info' 
+        type="button"
+        onClick={()=> {
+          console.log('clicked logout')
+          logout()
+        }}
+      >
+          <span className="btn-inner--icon">
+            <ExitToAppIcon/>
+          </span>
+      </Button>
   </div>
 }
+
+
 
 function Footer() {
   return <div className='footer'>
@@ -255,18 +392,5 @@ async function GetPhoto(tag) {
   </div>
  }
 
-// function Message({m, name}){
-//   return <div className="message-wrap"
-//     from={m.name===name?'me':'you'}
-//     onClick={()=>console.log(m)}>
-//     <div className="message">
-//       <div className="msg-name">{m.name}</div>
-//       <div className="msg-text">
-//         {m.text}
-//         {m.img && <img src={bucket + m.img + suffix} alt="pic" />}
-//       </div>
-//     </div>
-//   </div>
-// }
 
 export default App;
