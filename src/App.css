@@ -138,9 +138,17 @@ html,body,#root{
   color: #172b4d;
 }
 
+.logout{
+  margin-left: .4rem;
+}
+
 .cardBody {
   background-color: #f4f5f7;
   border-radius: .3rem;
+}
+
+.signup-button{
+  margin-right: .5rem;
 }
 
 .city-country {
