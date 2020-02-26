@@ -156,7 +156,6 @@ html,body,#root{
   left: .75rem;
   top: .45rem;
   text-transform: capitalize;
-  font-weight: bold;
 }
 
 .dates {
@@ -167,6 +166,7 @@ html,body,#root{
   top: 2.1rem;
 }
 
+<<<<<<< HEAD
 
 .makeTrip{
   display: flex;
@@ -202,4 +202,59 @@ html,body,#root{
   margin-left: 1rem;
   text-align: left;
   font-size: 1.2rem;
+=======
+h3 {
+  position: absolute;
+  left: .75rem;
+  top: .45rem;
+  width: 100%;
+  text-transform: capitalize;
+}
+
+h4 {
+  text-transform: capitalize;
+  position: absolute;
+  font-size: 16px;
+  top: 3.2rem;
+  left: .75rem;
+}
+
+.text-muted {
+  font-size: 1.1rem;
+}
+
+.modal-header {
+  height: 5.5rem;
+}
+
+.modal-body img {
+  position: absolute;
+  left: .75rem;
+  top: .75rem;
+  width: calc(100.3% - 1.5rem);
+  height: 9rem;
+  object-fit: cover;
+  border-radius: .5rem;
+  display: block;
+}
+
+.modal-body {
+  height: 30rem;
+}
+
+.trip-text {
+  margin-top: 9.5rem;
+}
+
+h5 {
+  text-transform: capitalize;
+}
+
+.key {
+  font-weight: bold;
+}
+
+.lowercase {
+  text-transform: none;
+>>>>>>> 1e4fa3dde15453983b19706b60d91849c6ec1e43
 }
