@@ -23,7 +23,6 @@ html,body,#root{
   background-color: #5E72E4;
   align-items:center;
   justify-content: space-between;
-  
 }
 
 .left-header{
@@ -166,4 +165,41 @@ html,body,#root{
   position: absolute;
   left: .75rem;
   top: 2.1rem;
+}
+
+
+.makeTrip{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+}
+
+.searchDestination{
+  width: 100%;
+  margin-top: 1.5rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+.setDate{
+
+}
+
+.searchActivities{
+
+}
+
+.userTripInputs{
+  margin-top: 1rem;
+  background-color: coral;
+  color: white;
+  width: 85%;
+  border-radius: .5rem;
+}
+
+.destinationChosen{
+  margin-left: 1rem;
+  text-align: left;
+  font-size: 1.2rem;
 }

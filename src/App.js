@@ -3,7 +3,7 @@ import './App.css';
 import "./App.css";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import AddIcon from '@material-ui/icons/Add';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 // reactstrap components
 import {
@@ -28,6 +28,8 @@ import "firebase/auth";
 
 function App() {
   const [user, setUser] = useState(null)
+  const [tripPlan, setTripPlan] = useState(false)
+
   useEffect(()=>{
     firebase.auth().onAuthStateChanged(function(user) {
       console.log(user)
@@ -43,11 +45,78 @@ function App() {
 
   return (
     <div className="App">
-      <Header user={user} />
+      <Header user={user} tripPlan={tripPlan} setTripPlan={setTripPlan}/>
       <Footer />
-      <SearchBar />
+      {!tripPlan && <SearchBar />}
+      {tripPlan && <MakeTrip />}
     </div>
   );
+}
+
+function MakeTrip(){
+  const [destinationSearchTerm, setDestinationSearchTerm] = useState('')
+  const [destination, setDestination] = useState('')
+
+  return <div className='makeTrip'>
+    <div className='userTripInputs'>
+      <div className='destinationChosen'>Destination: {destinationSearchTerm}</div>
+    </div>
+
+    {/* Search destination search bar */}
+    <div className='searchDestination'>
+      <FormGroup>
+        <InputGroup className="mb-4">
+          <Input 
+            placeholder = "Search Destination"
+            type="text" 
+            value={destination} 
+            onChange={e=> setDestination(e.target.value)}
+            onKeyPress={async e=> {
+              if(e.key ==='Enter') {
+                console.log(destination)
+                setDestination('')
+                setDestinationSearchTerm(destination)
+              }
+            }}
+          />
+
+          <InputGroupAddon addonType="append">
+            <InputGroupText style={{backgroundColor: "#f5365c"}}
+              onClick={async ()=> {
+                if(destination) 
+                  console.log('clicked the button')
+                  console.log(destination)
+                  setDestinationSearchTerm('')
+                }}
+            >
+              <i className="ni ni-zoom-split-in" style={{color: "white"}}/>
+            </InputGroupText>
+          </InputGroupAddon>
+        </InputGroup>
+      </FormGroup>
+    </div>
+
+
+
+  </div>
+}
+
+function MakeTripHeader(props){
+  return <div>
+    <Button 
+        className="btn-icon btn-2" 
+        color='info' 
+        type="button"
+        onClick={()=> {
+          props.closeTrip()
+          console.log('clicked x button to cancel out of plan')
+        }}
+      >
+          <span className="btn-inner--icon">
+            <CancelIcon/>
+          </span>
+      </Button>
+  </div>
 }
 
 function LoginButton(){
@@ -92,7 +161,6 @@ function LoginButton(){
       // ...
     });
   }
-
 
   return <div>
     <Button
@@ -169,7 +237,7 @@ function LoginButton(){
                       setEmail('')
                       setPassword('')
                       setModalOpen(false)
-                      signUp() // change this to be sign up
+                      signUp() 
                   }    
                   }
                 >
@@ -206,8 +274,7 @@ function LoginButton(){
                       setPassword('')
                       setModalOpen(false)
                       googleLogin() // calls the function given by firebase
-                  }    
-                  }
+                  }}
                 >
                   Google
                 </Button>
@@ -231,12 +298,14 @@ function Header(props) {
 
     <div className="right-header">
       {!props.user && <LoginButton/>}
-      {props.user && <TaskBar/>}
+      {props.user && !props.tripPlan &&<TaskBar openTrip={()=> props.setTripPlan(true)}/>}
+      {props.user && props.tripPlan && <MakeTripHeader closeTrip={()=> props.setTripPlan(false)}/>}
     </div>
   </div>
 }
 
-function TaskBar(){
+
+function TaskBar(props){
   function logout(){
     firebase.auth().signOut().then(function() {
       console.log('successful logout!')
@@ -252,12 +321,11 @@ function TaskBar(){
         type="button"
         onClick={()=> {
           console.log('clicked + button to add plan')
+          props.openTrip()
         }}
       >
           <span className="btn-inner--icon">
             <AddCircleOutlineIcon/>
-            {/* <AddIcon/> */}
-            
           </span>
       </Button>
 
@@ -287,7 +355,6 @@ function Footer() {
 
 
 function SearchBar(props){
-
   var searchTerm = ""
   var [text, setText] = useState('')
   var [searchedPlans, setPlans] = useState([])
