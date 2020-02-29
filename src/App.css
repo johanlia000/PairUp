@@ -70,9 +70,17 @@ html,body,#root{
 
 
 .search-bar{
-  margin-top: 1rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
+  width: 98%;
+  display: flex;
+  margin: 5px;
+  padding: 8px;
+}
+
+
+
+#search-button{
+  margin-left: 4px;
+  padding: .8rem .95rem;
 }
 
 
@@ -87,6 +95,7 @@ html,body,#root{
 
 @media screen and (min-width: 800px) {
   .trips{justify-content: flex-start};
+  .makeTrips{justify-content: flex-start};
 }
 
 .trip-card{
@@ -137,6 +146,46 @@ html,body,#root{
   color: #172b4d;
 }
 
+.loginPopupLogo{
+  display: flex;
+  justify-content: center;
+
+}
+
+.email-login{
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.password-login{
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+
+}
+
+.loginSignupButton{
+  display: flex;
+  justify-content: space-around;
+  padding-top: 1rem;
+}
+
+.googleButton{
+  display: flex;
+  padding-top: .7rem;
+  padding-bottom: 1rem;
+  justify-content: center;
+}
+
+.orGoogle{
+  display: flex;
+  justify-content: center;
+  padding-top: 1.5rem;
+  font-size: .8rem;
+}
+
 .logout{
   margin-left: .4rem;
 }
@@ -166,43 +215,82 @@ html,body,#root{
   top: 2.1rem;
 }
 
-<<<<<<< HEAD
+
 
 .makeTrip{
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-
+  overflow: auto;
 }
 
+.saveButtonTrips{
+  width: 100%;
+  margin: 2rem;
+
+}
+.saveButtonTrip{
+  font-size: 20rem;
+
+}
+.userTripInputs{
+  margin-top: 1rem;
+  background-color:#172b4d;
+  color: white;
+  width: 85%;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  border-radius: .5rem;
+  font-size: 1.1rem;
+}
+
+.destinationChosen{
+  margin-top: .4rem;
+  margin-left: 1rem;
+  text-align: left;
+  
+}
+
+.dateChosen{
+  margin-left: 1rem;
+  text-align: left;
+}
+
+.activitiesChosen{
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-bottom: .4rem;
+  text-align: left;
+  flex-wrap: wrap;
+}
+
+
+/* destination search bar */
 .searchDestination{
+  display: flex;
+  height: 3.5rem;
+  width: 80%;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.setDate{
   width: 100%;
   margin-top: 1.5rem;
   margin-left: 2rem;
   margin-right: 2rem;
 }
 
-.setDate{
-
-}
-
 .searchActivities{
-
+  display: flex;
+  margin-top: 2rem;
+  height: 3.5rem;
+  width: 80%;
+  justify-content: center;
 }
 
-.userTripInputs{
-  margin-top: 1rem;
-  background-color: coral;
-  color: white;
-  width: 85%;
-  border-radius: .5rem;
-}
 
-.destinationChosen{
-  margin-left: 1rem;
-  text-align: left;
-  font-size: 1.2rem;
-=======
+
 h3 {
   position: absolute;
   left: .75rem;
@@ -256,5 +344,4 @@ h5 {
 
 .lowercase {
   text-transform: none;
->>>>>>> 1e4fa3dde15453983b19706b60d91849c6ec1e43
 }

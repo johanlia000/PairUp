@@ -4,6 +4,24 @@ import "./App.css";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import CancelIcon from '@material-ui/icons/Cancel';
+import TextField from '@material-ui/core/TextField';
+import SearchIcon from '@material-ui/icons/Search';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import EmailIcon from '@material-ui/icons/Email';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import MomentUtils from '@date-io/moment';
+import DateFnsUtils from '@date-io/date-fns';
+
+import Grid from '@material-ui/core/Grid';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+
+import 'date-fns';
 
 // reactstrap components
 import {
@@ -18,8 +36,6 @@ import {
   CardBody,
   Form,
   Modal,
-  Row,
-  Col,
   ModalHeader,
   ModalBody,
   ModalFooter
@@ -29,6 +45,8 @@ import "firebase/storage"
 import { db, queryPlans } from './db'
 import "firebase/analytics"
 import "firebase/auth";
+import { tr } from 'date-fns/locale';
+import { set } from 'date-fns';
 
 
 function App() {
@@ -51,23 +69,151 @@ function App() {
   return (
     <div className="App">
       <Header user={user} tripPlan={tripPlan} setTripPlan={setTripPlan}/>
-      <Footer />
       {!tripPlan && <SearchBar />}
-      {tripPlan && <MakeTrip />}
+      {tripPlan && <MakeTrip closeTrip={()=> setTripPlan(false)}/>}
+      <Footer />
+      
     </div>
   );
 }
 
-function MakeTrip(){
+
+
+function MakeTrip(props){
   const [destinationSearchTerm, setDestinationSearchTerm] = useState('')
   const [destination, setDestination] = useState('')
 
+  const [activites, addActivity] = useState([])
+  const [activity, setActivity] = useState('')
+
+  const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
+  const handleDateChange = date => {
+    console.log("first" + date)
+    setSelectedDate(date);
+    console.log(selectedDate)
+  };  
+
   return <div className='makeTrip'>
     <div className='userTripInputs'>
-      <div className='destinationChosen'>Destination: {destinationSearchTerm}</div>
+      <div className='destinationChosen'><b>Destination: </b> {destinationSearchTerm}</div>
+      <div className='dateChosen'><b>Date: </b>  </div>
+      <div className='activitiesChosen'><b>Activities: </b> 
+        {activites.map((item, index)=>
+        <span key={index}> 
+          <span>{item}</span>
+          {index<activites.length-1 && <span>, </span>}
+        </span>
+        )}
+      </div>
     </div>
 
-    {/* Search destination search bar */}
+    <div className='setDate'>
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <KeyboardDatePicker
+            disableToolbar
+            variant="inline"
+            format="MM/dd/yyyy"
+            margin="normal"
+            id="date-picker-dialog"
+            label="Start Date"
+            value={selectedDate}
+            onChange={
+              handleDateChange
+            }
+            
+            KeyboardButtonProps={{
+              'aria-label': 'change date',
+            }}
+          />
+      </MuiPickersUtilsProvider>
+        
+    </div>
+
+
+
+    <div className='searchDestination'>
+      <TextField  fullWidth
+        label="Enter Destination" 
+        variant="outlined" 
+        value={destination} 
+        onChange={e=> setDestination(e.target.value)}
+            onKeyPress={async e=> {
+              if(e.key ==='Enter' && destination != 0) {
+                console.log("pressed enter " + destination)
+                setDestination('')
+                setDestinationSearchTerm(destination)
+              }
+            }}
+      />
+
+      <Button 
+        id='search-button'
+        variant="contained" 
+        color="primary"
+        onClick={async ()=> {
+          if(destination != 0) 
+            console.log('clicked the button: ' + destination)
+            setDestination('')
+            setDestinationSearchTerm(destination)
+          }}
+      >
+        <SearchIcon /> 
+      </Button>
+    </div>
+
+    <div className='searchActivities'>
+      <TextField  fullWidth
+          label="Enter Activities" 
+          variant="outlined" 
+          value={activity} 
+            onChange={e=> setActivity(e.target.value)}
+            onKeyPress={async e=> {
+              if(e.key ==='Enter' && activity != 0) {
+                console.log('pressed enter' + activity)
+                addActivity(activites => [...activites, activity])
+                setActivity('')
+                console.log(activites)
+              }
+            }}
+        />
+
+        <Button 
+          id='search-button'
+          variant="contained" 
+          color="primary"
+          onClick={async ()=> {
+            if(activity != 0) 
+              console.log('clicked the button: ' + activity)
+              addActivity(activites => [...activites, activity])
+              setActivity('')
+              console.log(activites)
+            }}
+        >
+          <SearchIcon /> 
+        </Button>
+    </div>
+
+    <div className='saveButtonTrips'>
+      <Button 
+          style={{backgroundColor: "#f5365c", fontSize:'1.3rem'}}
+          className='saveButtonTrip'
+          variant="contained" 
+          size="large"
+          color="primary"
+          onClick={async ()=> {
+            console.log('clicked the save button')
+            console.log(destination)
+            console.log(activites)
+            console.log(selectedDate)
+            props.closeTrip()
+          }}
+        >
+          Save 
+        </Button>
+    </div>
+    
+
+    {/* Search destination search bar
     <div className='searchDestination'>
       <FormGroup>
         <InputGroup className="mb-4">
@@ -77,21 +223,20 @@ function MakeTrip(){
             value={destination} 
             onChange={e=> setDestination(e.target.value)}
             onKeyPress={async e=> {
-              if(e.key ==='Enter') {
-                console.log(destination)
+              if(e.key ==='Enter' && destination != 0) {
+                console.log("pressed enter " + destination)
                 setDestination('')
                 setDestinationSearchTerm(destination)
               }
             }}
           />
-
           <InputGroupAddon addonType="append">
             <InputGroupText style={{backgroundColor: "#f5365c"}}
               onClick={async ()=> {
-                if(destination) 
-                  console.log('clicked the button')
-                  console.log(destination)
-                  setDestinationSearchTerm('')
+                if(destination != 0) 
+                  console.log('clicked the button: ' + destination)
+                  setDestination('')
+                  setDestinationSearchTerm(destination)
                 }}
             >
               <i className="ni ni-zoom-split-in" style={{color: "white"}}/>
@@ -99,16 +244,78 @@ function MakeTrip(){
           </InputGroupAddon>
         </InputGroup>
       </FormGroup>
-    </div>
+    </div> */}
 
 
+    
+    {/* <div className='searchActivities'>
+      <FormGroup>
+        <InputGroup className="mb-4">
+          <Input 
+            placeholder = "Search Activities"
+            type="text" 
+            value={activity} 
+            onChange={e=> setActivity(e.target.value)}
+            onKeyPress={async e=> {
+              if(e.key ==='Enter' && activity != 0) {
+                console.log('pressed enter' + activity)
+                addActivity(activites => [...activites, activity])
+                setActivity('')
+                console.log(activites)
+              }
+            }}
+          />
+          <InputGroupAddon addonType="append">
+            <InputGroupText style={{backgroundColor: "#f5365c"}}
+              onClick={async ()=> {
+                if(activity != 0) 
+                  console.log('clicked the button: ' + activity)
+                  addActivity(activites => [...activites, activity])
+                  setActivity('')
+                  console.log(activites)
+                }}
+            >
+              <i className="ni ni-zoom-split-in" style={{color: "white"}}/>
+            </InputGroupText>
+          </InputGroupAddon>
+        </InputGroup>
+      </FormGroup>
+    </div> */}
+
+    {/* Save button: You want to send all of this information to firebase */}
+    {/* <div className='saveButtonTrips'>
+      <br></br>
+      <Button 
+        style={{fontSize: "1.3rem"}}
+        color="danger" 
+        type="button"
+        onClick={async ()=> {
+          console.log('clicked the save button')
+          console.log(destination)
+          console.log(activites)
+          props.closeTrip()
+        }}
+      >
+          Save
+      </Button>           
+    </div> */}
 
   </div>
 }
 
 function MakeTripHeader(props){
   return <div>
-    <Button 
+      <Button 
+        variant="contained"
+        color="primary"
+        onClick={()=> {
+          console.log('clicked + button to add plan')
+          props.closeTrip()
+        }}
+      >
+        <CancelIcon/>
+    </Button>
+    {/* <Button 
         className="btn-icon btn-2" 
         color='info' 
         type="button"
@@ -120,20 +327,26 @@ function MakeTripHeader(props){
           <span className="btn-inner--icon">
             <CancelIcon/>
           </span>
-      </Button>
+      </Button> */}
   </div>
 }
 
-function LoginButton(){
-  const [modalOpen, setModalOpen] = useState(false)
+function LoginButton(props){
+  const [dialogOpen, setDialogOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   var provider = new firebase.auth.GoogleAuthProvider();
+
+  const [signupError, setSignupError] = useState('')
 
   // Sign up and make user on firebase with email and password
   function signUp(){
     firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
       console.log(error)
+      if (error){
+        setSignupError(error['message'])
+      }
+      
     });    
   }
 
@@ -143,6 +356,7 @@ function LoginButton(){
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
+      console.log(error)
       // ...
     });
   }
@@ -168,15 +382,127 @@ function LoginButton(){
   }
 
   return <div>
-    <Button
-      block
-      color="secondary"
-      type="button"
-      onClick={() => setModalOpen(true)}
+    <Button 
+      variant="contained" 
+      color="primary"
+      onClick={() => setDialogOpen(true)}
     >
       Login
     </Button>
-    <Modal
+    <Dialog 
+      open={dialogOpen}
+      onClose={() => setDialogOpen(false)}
+      aria-labelledby="simple-dialog-title">
+      <DialogTitle id="simple-dialog-title">
+        <div className='loginPopupLogo'>
+          <img className = 'logoPic' src="/Photos/logo.png" alt="PairUp Logo"/>
+        </div>
+        <div className='email-login'>
+          <Grid container spacing={1} alignItems="flex-end">
+            <Grid item>
+              <EmailIcon />
+            </Grid>
+            <Grid item>
+              <TextField 
+                id="input-with-icon-grid" 
+                label="Email" 
+                placeholder="Email" 
+                type="email" 
+                value={email} 
+                onChange={e=> setEmail(e.target.value)}
+              />
+            </Grid>
+          </Grid>        
+        </div>
+        
+        <div className='password-login'>
+           <Grid container spacing={1} alignItems="flex-end">
+            <Grid item>
+              <LockOpenIcon />
+            </Grid>
+            <Grid item>
+              <TextField 
+                id="input-with-icon-grid" 
+                label="Password" 
+                placeholder="Password" 
+                type="password" 
+                value={password}
+                onChange={e=> setPassword(e.target.value)}
+              />
+            </Grid>
+          </Grid>
+        </div>
+        
+        {/* {signupError && <div>{signupError}</div>} */}
+        <div className='loginSignupButton'>
+          <Button 
+            variant="contained" 
+            color="primary"
+            onClick={async ()=> {
+              if(email && password) 
+                console.log(email)
+                console.log(password)
+                setEmail('')
+                setPassword('')
+                signUp()
+                setDialogOpen(false)
+                // if (signupError != ""){
+                //   setDialogOpen(true)
+                // } else{
+                //   setSignupError('')
+                //   setDialogOpen(false)
+                // }
+            }}
+          >
+            Sign Up
+          </Button>
+          
+
+          <Button 
+            variant="contained" 
+            color="primary"
+            onClick={async ()=> {
+              if(email && password) 
+                console.log(email)
+                console.log(password)
+                setEmail('')
+                setPassword('')
+                setDialogOpen(false)
+                loginEmail() 
+            }}
+          >
+            Login
+          </Button>
+        </div>
+
+        <div className='orGoogle'>or login with</div>
+
+        <div className='googleButton'>
+          <Button 
+            variant="contained" 
+            color="primary"
+            style={{backgroundColor: "#DB4437", outlineColor:"#DB4437"}}
+            onClick={async ()=> {
+              if(email && password) 
+                console.log(email)
+                console.log(password)
+                setEmail('')
+                setPassword('')
+                setDialogOpen(false)
+                googleLogin() 
+            }}
+          >
+            Google
+          </Button>
+        </div>
+        
+
+
+
+      </DialogTitle>
+    </Dialog>
+
+    {/* <Modal
       className="modal-dialog-centered"
       size="sm"
       isOpen={modalOpen}
@@ -288,7 +614,7 @@ function LoginButton(){
           </CardBody>
         </Card>
       </div>
-    </Modal>
+    </Modal> */}
   </div>
 }
 
@@ -319,8 +645,31 @@ function TaskBar(props){
     }); 
   }
   return <div>
-    {/* add travel plan  */}
-    <Button 
+
+  <Button 
+    variant="contained"
+    color="primary"
+    onClick={()=> {
+      console.log('clicked + button to add plan')
+      props.openTrip()
+    }}
+  >
+      <AddCircleOutlineIcon/>
+  </Button>
+
+  <Button 
+    className='logout'
+    variant="contained"
+    color="primary"
+    onClick={()=> {
+      console.log('clicked logout')
+      logout()
+    }}
+  >
+    <ExitToAppIcon/>
+  </Button>
+    
+    {/* <Button 
         className="btn-icon btn-2" 
         color='info' 
         type="button"
@@ -334,7 +683,7 @@ function TaskBar(props){
           </span>
       </Button>
 
-      {/* logout button */}
+   
       <Button 
         className="btn-icon btn-2 logout" 
         color='info' 
@@ -347,7 +696,7 @@ function TaskBar(props){
           <span className="btn-inner--icon">
             <ExitToAppIcon/>
           </span>
-      </Button>
+      </Button> */}
   </div>
 }
 
@@ -367,7 +716,48 @@ function SearchBar(props){
 
  
  return <div className='search-bar'>
-    <FormGroup>
+    <TextField  fullWidth
+      label="Search" 
+      variant="outlined" 
+      value={text} 
+      onChange={e=> setText(e.target.value)}
+      onKeyPress={async e=> {
+        if(e.key ==='Enter') {
+          console.log("pressed enter: "+ text)
+          searchTerm = text
+          searchedPlans = await queryPlans(searchTerm)
+          if (searchedPlans.length === 0) {
+            setMessage(true)
+          } else {
+            setMessage(false)
+          }
+          setPlans(searchedPlans)
+          setText('')
+        }
+      }}
+    />
+
+    <Button 
+      id='search-button'
+      variant="contained" 
+      color="primary"
+      onClick={async ()=> {
+        if(text) 
+          searchTerm = text
+          searchedPlans = await queryPlans(searchTerm)
+          if (searchedPlans.length === 0) {
+            setMessage(true)
+          } else {
+            setMessage(false)
+          }
+          setPlans(searchedPlans)
+          setText('')
+        }}
+    >
+      <SearchIcon /> 
+    </Button>
+
+    {/* <FormGroup>
       <InputGroup className="mb-4">
         <Input 
           placeholder="Search" 
@@ -408,7 +798,7 @@ function SearchBar(props){
           </InputGroupText>
         </InputGroupAddon>
       </InputGroup>
-    </FormGroup>
+    </FormGroup> */}
 
     {!(message) && searchedPlans && searchedPlans.length && <TripPlans searchedPlans={searchedPlans} />}
     {message && <NoTrips />}
