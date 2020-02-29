@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'reactn';
+import {setGlobal, useGlobal} from 'reactn';
 import './App.css';
 import "./App.css";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -30,9 +31,32 @@ import { db, queryPlans } from './db'
 import "firebase/analytics"
 import "firebase/auth";
 
+import { makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+const useStyles = makeStyles({
+  root: {
+    maxWidth: 345,
+  },
+  media: {
+    height: 140,
+  },
+});
+
+setGlobal({
+  state: true
+})
+
 
 function App() {
   const [user, setUser] = useState(null)
+  const [showIntro, setShowIntro] = useGlobal("state")
+
   useEffect(()=>{
     firebase.auth().onAuthStateChanged(function(user) {
       console.log(user)
@@ -48,9 +72,10 @@ function App() {
 
   return (
     <div className="App">
-      <Header user={user} />
-      <Footer />
-      <SearchBar />
+      {!showIntro && <Header user={user}/>}
+      {!showIntro &&<Footer />}
+      {!showIntro && <SearchBar />}
+      {showIntro && <WelcomePage />}
     </div>
   );
 }
@@ -59,6 +84,7 @@ function LoginButton(){
   const [modalOpen, setModalOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
   var provider = new firebase.auth.GoogleAuthProvider();
 
   // Sign up and make user on firebase with email and password
@@ -104,7 +130,9 @@ function LoginButton(){
       block
       color="secondary"
       type="button"
-      onClick={() => setModalOpen(true)}
+      onClick={() => {
+        setModalOpen(true)
+      }}
     >
       Login
     </Button>
@@ -168,11 +196,16 @@ function LoginButton(){
                   color="info"
                   type="button"
                   onClick={async ()=> {
-                    if(email && password) 
-                      console.log(email)
-                      console.log(password)
+                    console.log("email + " + email)
+                    console.log("password + " + password)
+                    if(email.length > 0 || password.length > 0) 
+                      console.log("hello" + email)
+                      console.log("yee" + password)
                       setEmail('')
                       setPassword('')
+                      setGlobal({
+                        state: false,
+                      });
                       setModalOpen(false)
                       signUp() // change this to be sign up
                   }    
@@ -186,12 +219,17 @@ function LoginButton(){
                   color="info"
                   type="button"
                   onClick={async ()=> {
-                    if(email && password) 
-                      console.log(email)
-                      console.log(password)
+                    console.log("email + " + email)
+                    console.log("password + " + password)
+                    if(email.length > 0 || password.length > 0) 
+                      console.log("hello" + email)
+                      console.log("yee" + password)
                       setEmail('')
                       setPassword('')
                       setModalOpen(false)
+                      setGlobal({
+                        state: false,
+                      });
                       loginEmail() 
                   }}
                 >
@@ -209,6 +247,9 @@ function LoginButton(){
                       console.log(password)
                       setEmail('')
                       setPassword('')
+                      setGlobal({
+                        state: false,
+                      });
                       setModalOpen(false)
                       googleLogin() // calls the function given by firebase
                   }    
@@ -222,6 +263,7 @@ function LoginButton(){
         </Card>
       </div>
     </Modal>
+
   </div>
 }
 
@@ -235,7 +277,6 @@ function Header(props) {
     </div>
 
     <div className="right-header">
-      {!props.user && <LoginButton/>}
       {props.user && <TaskBar/>}
     </div>
   </div>
@@ -400,77 +441,63 @@ async function GetPhoto(tag) {
 
   const [showDetails, setShowDetails] = useState(false)
 
-  return <div className="overall-container">
-      <div className='trip-card'
-        onClick={() => 
+  return <Card 
+      className={classes.root}
+      onClick={() => 
         setShowDetails(true)
-      }   
-      >
-      <img src = {props.plan.Photo} className = "trip-picture"/>
-      <div className='trip-text-box'>
-        <div className='trip-text'>
-          <h1 className="city-country">{props.plan.City}, {props.plan.Country}</h1>
-          <h2 className="dates">{Date(props.plan.startDate)} - {Date(props.plan.endDate)}</h2>
-        </div>
-      </div>
-    </div>
+      }>}
+      <CardActionArea>
+        <CardMedia
+          className={classes.media}
+          image= {props.plan.Photo}
+          title= "trip photo"
+        />
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="h2">
+            {props.plan.City}, {props.plan.Country}
+          </Typography>
+          <Typography variant="subtitle2" color="textSecondary">
+            {Date(props.plan.startDate)} - {Date(props.plan.endDate)}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+    </Card>
     
-    {showDetails && <Modal />}
+    {showDetails && <Dialog />}
 
-    <Modal
-      className="modal-dialog-centered"
-      isOpen= {showDetails}
-      toggle={() => showDetails}
-      >
-      <div className="modal-header">
-        <h3 className="modal-title" id="modal-title-default">
-          {props.plan.City}, {props.plan.Country}
-        </h3>
-        <h4 className = "text-muted">
-          {Date(props.plan.startDate)} - {Date(props.plan.endDate)}
-        </h4>
-        <button
-          aria-label="Close"
-          className="close"
-          data-dismiss="modal"
-          type="button"
-          onClick={() => setShowDetails(false)}
-        >
-          <span aria-hidden={true}>×</span>
-        </button>
-      </div>
-      <div className="modal-body">
-        <img src={props.plan.Photo} />
-        <div className ="trip-text">
-          <h5 className = "h6">
-            <span className="key">Trip Owner: </span><span>{props.plan.Name}</span>
-          </h5>
-          <h5 className ="h6">
-          <span className="key">Preferred Contact: </span><span className="lowercase">{props.plan.PreferredContact}</span>
-          </h5>
-          <h5 className ="h6">
-          <span className="key">Planned Activities: </span><span>{Activities(props.plan.PlannedActivities)}</span>
-          </h5>
-        </div>
-      </div>
-      <div className="modal-footer">
-        <Button color="primary"
-          type="button"
-          onClick={() => setShowDetails(false)}>
-          Save changes
-        </Button>
-        <Button
-          className="ml-auto"
-          color="link"
-          data-dismiss="modal"
-          type="button"
-          onClick={() => setShowDetails(false)}
-        >
-          Close
-        </Button>
-      </div>
-    </Modal>
-  </div>
+    <Dialog>
+      <Card className={classes.root}>
+        <CardActionArea>
+          <CardMedia
+            className={classes.media}
+            image={props.plan.Photo}
+            title= "photo of location"
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              {props.plan.City}, {props.plan.Country}
+            </Typography>
+            <Typography gutterBottom variant="subtitle2">
+              {Date(props.plan.startDate)} - {Date(props.plan.endDate)}
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              <span className="key">Trip Owner: </span><span>{props.plan.Name}</span>
+              <span className="key">Preferred Contact: </span><span className="lowercase">{props.plan.PreferredContact}</span>
+              <span className="key">Planned Activities: </span><span>{Activities(props.plan.PlannedActivities)}</span>
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+        <CardActions>
+          <Button 
+            size="small" 
+            color="primary"
+            onClick={() => setShowDetails(false)}
+            >
+            Close
+          </Button>
+        </CardActions>
+      </Card>
+    </Dialog>
  }
 
  function Date(date) {
@@ -512,10 +539,28 @@ async function GetPhoto(tag) {
 
  
 function Activities(activityArray) {
-  console.log(activityArray)
-  return "hello"
+  return <span className="activities">
+    {activityArray.map((item, index)=>
+      <span>
+      <span>{item}</span>
+        {index<activityArray.length-1 && <span>,</span>}
+      &nbsp;
+    </span>
+    )}
+  </span>
 }
 
-
+function WelcomePage() {
+  return <div className="everything">
+    <img src= "/Photos/village.jpg" className ="welcome-img" />
+    <div className="welcome">
+      <div className="logo-container">
+        <img src="/Photos/logo.png" className= "welcome-logo" />
+      </div>
+      <div variant="h1" component="h2">Welcome to PairUp!</div>
+      <LoginButton className="button-container"/>
+    </div>
+  </div>
+}
 
 export default App;

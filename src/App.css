@@ -203,7 +203,9 @@ h4 {
 }
 
 .modal-body {
-  height: 30rem;
+  min-height: 17rem;
+  max-height: 20rem;;
+  overflow: auto;
 }
 
 .trip-text {
@@ -220,4 +222,33 @@ h5 {
 
 .lowercase {
   text-transform: none;
+}
+
+.activities {
+  width: 100%;
+}
+
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.welcome-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  object-fit: cover;
+}
+
+.welcome-logo {
+  height: 7rem;
+  width: 8rem;
+}
+
+.button-container {
+  margin-top: 3rem;
 }
