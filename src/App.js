@@ -8,12 +8,24 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
 import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import EmailIcon from '@material-ui/icons/Email';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import MomentUtils from '@date-io/moment';
 import DateFnsUtils from '@date-io/date-fns';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogActions from '@material-ui/core/DialogActions';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 import Grid from '@material-ui/core/Grid';
 import {
@@ -25,22 +37,22 @@ import {
 import 'date-fns';
 
 // reactstrap components
-import {
-  FormGroup,
-  Button,
-  Input,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroup,
-  Card,
-  CardHeader,
-  CardBody,
-  Form,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter
-} from "reactstrap";
+// import {
+//   FormGroup,
+//   Button,
+//   Input,
+//   InputGroupAddon,
+//   InputGroupText,
+//   InputGroup,
+//   Card,
+//   CardHeader,
+//   CardBody,
+//   Form,
+//   Modal,
+//   ModalHeader,
+//   ModalBody,
+//   ModalFooter
+// } from "reactstrap";
 import * as firebase from "firebase/app"
 import "firebase/storage"
 import { db, queryPlans } from './db'
@@ -48,24 +60,43 @@ import "firebase/analytics"
 import "firebase/auth";
 import { tr } from 'date-fns/locale';
 import { set } from 'date-fns';
-
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-const useStyles = makeStyles({
+const styles = theme => ({
   root: {
-    maxWidth: 345,
+    margin: 0,
+    padding: theme.spacing(2),
   },
-  media: {
-    height: 140,
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+    color: theme.palette.grey[500],
   },
 });
+const DialogTitle = withStyles(styles)(props => {
+  const { children, classes, onClose, ...other } = props;
+  return (
+    <MuiDialogTitle disableTypography className={classes.root} {...other}>
+      <Typography variant="h6">{children}</Typography>
+      {onClose ? (
+        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </MuiDialogTitle>
+  );
+});
+const DialogContent = withStyles(theme => ({
+  root: {
+    padding: theme.spacing(2),
+  },
+}))(MuiDialogContent);
 
+const DialogActions = withStyles(theme => ({
+  root: {
+    margin: 0,
+    padding: theme.spacing(1),
+  },
+}))(MuiDialogActions);
 setGlobal({
   state: true
 })
@@ -367,6 +398,9 @@ function LoginButton(props){
   function signUp(){
     firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
       console.log(error)
+      setGlobal({
+        state: false,
+      });
       if (error){
         setSignupError(error['message'])
       }
@@ -378,6 +412,9 @@ function LoginButton(props){
   function loginEmail(){
     firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
       // Handle Errors here.
+      setGlobal({
+        state: false,
+      });
       var errorCode = error.code;
       var errorMessage = error.message;
       console.log(error)
@@ -392,6 +429,9 @@ function LoginButton(props){
       var token = result.credential.accessToken;
       // The signed-in user info.
       var user = result.user;
+      setGlobal({
+        state: false,
+      });
       // ...
     }).catch(function(error) {
       // Handle Errors here.
@@ -677,6 +717,9 @@ function TaskBar(props){
   function logout(){
     firebase.auth().signOut().then(function() {
       console.log('successful logout!')
+      setGlobal({
+        state: true,
+      });
     }).catch(function(error) {
       console.log(error)
     }); 
@@ -752,7 +795,8 @@ function SearchBar(props){
   var [message, setMessage] = useState(false)
 
  
- return <div className='search-bar'>
+ return <div>
+   <div className='search-bar'>
     <TextField  fullWidth
       label="Search" 
       variant="outlined" 
@@ -836,10 +880,9 @@ function SearchBar(props){
         </InputGroupAddon>
       </InputGroup>
     </FormGroup> */}
-
+    </div>
     {!(message) && searchedPlans && searchedPlans.length && <TripPlans searchedPlans={searchedPlans} />}
     {message && <NoTrips />}
-
   </div>
 }
 
@@ -892,20 +935,43 @@ async function GetPhoto(tag) {
 
  function Plan(props) {
 
-  const [showDetails, setShowDetails] = useState(false)
+  const useStyles = makeStyles({
+    root: {
+      maxWidth: 345,
+    },
+    media: {
+      height: 140,
+    },
+  });
+  const [open, setOpen] = React.useState(false);
 
-  return <Card 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const [showDetails, setShowDetails] = useState(false)
+  const classes = useStyles();
+
+  return <div>
+    <Card 
       className={classes.root}
-      onClick={() => 
+      id="card"
+      onClick={() => {
         setShowDetails(true)
-      }>}
+        setOpen(true)
+        console.log("clicked")
+      }}>
       <CardActionArea>
         <CardMedia
-          className={classes.media}
-          image= {props.plan.Photo}
-          title= "trip photo"
-        />
-        <CardContent>
+            className={classes.media}
+            component="img"
+            height="40"
+            image= {props.plan.Photo}
+            title= "trip photo"
+          />
+        <CardContent className="title-case">
           <Typography gutterBottom variant="h5" component="h2">
             {props.plan.City}, {props.plan.Country}
           </Typography>
@@ -918,7 +984,7 @@ async function GetPhoto(tag) {
     
     {showDetails && <Dialog />}
 
-    <Dialog>
+    {/* <Dialog>
       <Card className={classes.root}>
         <CardActionArea>
           <CardMedia
@@ -949,8 +1015,35 @@ async function GetPhoto(tag) {
             Close
           </Button>
         </CardActions>
-      </Card>
-    </Dialog>
+      </Card> */}
+    {/* </Dialog> */}
+
+    <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} className="trip-details">
+        <CardMedia
+            className={classes.media}
+            image={props.plan.Photo}
+            title= "photo of location"
+          />
+        <DialogContent dividers className="title-case">
+            <Typography gutterBottom variant="h5" component="h2">
+              {props.plan.City}, {props.plan.Country}
+            </Typography>
+            <Typography gutterBottom variant="subtitle2">
+              {Date(props.plan.startDate)} - {Date(props.plan.endDate)}
+            </Typography>
+            <Typography variant="body2">
+              <span className="key">Trip Owner: </span><span>{props.plan.Name}</span>
+              <div><span className="key">Preferred Contact: </span><span className="lowercase">{props.plan.PreferredContact}</span></div>
+              <div><span className="key">Planned Activities: </span><span>{Activities(props.plan.PlannedActivities)}</span></div>
+            </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+  </div>
  }
 
  function Date(date) {
@@ -1004,13 +1097,20 @@ function Activities(activityArray) {
 }
 
 function WelcomePage() {
-  return <div className="everything">
+  const useStyles = makeStyles({
+    root: {
+      width: '100%',
+      maxWidth: 500,
+    },
+  });
+  const classes = useStyles();
+  return <div>
     <img src= "/Photos/village.jpg" className ="welcome-img" />
     <div className="welcome">
       <div className="logo-container">
         <img src="/Photos/logo.png" className= "welcome-logo" />
       </div>
-      <div variant="h1" component="h2">Welcome to PairUp!</div>
+      <Typography className="brand" variant="h1" component="h2" gutterBottom>Welcome to PairUp!</Typography>
       <LoginButton className="button-container"/>
     </div>
   </div>
