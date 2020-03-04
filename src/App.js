@@ -36,6 +36,7 @@ import {
 
 import 'date-fns';
 
+
 // reactstrap components
 // import {
 //   FormGroup,
@@ -60,6 +61,10 @@ import "firebase/analytics"
 import "firebase/auth";
 import { tr } from 'date-fns/locale';
 import { set } from 'date-fns';
+
+var provider = new firebase.auth.GoogleAuthProvider();
+
+
 const styles = theme => ({
   root: {
     margin: 0,
@@ -108,13 +113,18 @@ function App() {
   const [tripPlan, setTripPlan] = useState(false)
 
   useEffect(()=>{
+    
     firebase.auth().onAuthStateChanged(function(user) {
       console.log(user)
       if (user) {
-        setUser(user)
+        
+          setUser(user)
+        
       } else {
         // No user is signed in.
-        setUser(null)
+       
+          setUser(null)
+      
       }
     });
   }, [])
@@ -289,21 +299,22 @@ function LoginButton(props){
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  var provider = new firebase.auth.GoogleAuthProvider();
-
   const [signupErrorValue, setSignupErrorValue] = useState('')
   console.log(signupErrorValue)
+
   const [signupError, setSignupError] = useState(false)
   console.log(signupError)
 
   // Sign up and make user on firebase with email and password
   function signUp(){
+    console.log("SIGNUP")
     firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
       console.log(error)
-      setGlobal({
-        state: false,
-      });
+      // setGlobal({
+      //   state: false,
+      // });
       if(error){ // if there is an error
+        console.log('going into the if error')
         setSignupErrorValue(error.message)
         setSignupError(true)
       } else { // if there is no error
@@ -312,15 +323,6 @@ function LoginButton(props){
         setSignupError(false)
       }
 
-      // if (error){
-      //   // console.log(typeof(error.message)) // string
-      //   // console.log(error.message) // correct error message
-      //   console.log('yes there is an error.')
-      //   setSignupErrorValue(error.message)
-      //   setSignupError(true)
-      //   //console.log('setting error message for signup')
-      // }
-
     });    
   }
 
@@ -328,13 +330,21 @@ function LoginButton(props){
   function loginEmail(){
     firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
       // Handle Errors here.
-      setGlobal({
-        state: false,
-      });
+      // setGlobal({
+      //   state: false,
+      // });
       var errorCode = error.code;
       var errorMessage = error.message;
       console.log(error)
-      // ...
+      if(error){ // if there is an error
+        console.log('going into the if error')
+        setSignupErrorValue(error.message)
+        setSignupError(true)
+      } else { // if there is no error
+        setDialogOpen(false) // close dialog
+        setSignupErrorValue('')
+        setSignupError(false)
+      }
     });
   }
 
@@ -371,7 +381,10 @@ function LoginButton(props){
     </Button>
     <Dialog 
       open={dialogOpen}
-      onClose={() => setDialogOpen(false)}
+      onClose={() => {
+        console.log("CLOSE 2")
+        setDialogOpen(false)
+      }}
       aria-labelledby="simple-dialog-title">
       <DialogTitle id="simple-dialog-title">
         <div className='loginPopupLogo'>
@@ -413,7 +426,7 @@ function LoginButton(props){
           </Grid>
         </div>
         
-        {signupError && <div>{signupErrorValue}</div>}
+        {signupError && <div className='orGoogle'>{signupErrorValue}</div>}
         <div className='loginSignupButton'>
           <Button 
             variant="contained" 
@@ -426,12 +439,6 @@ function LoginButton(props){
                 setPassword('')
                 console.log("calling signup")
                 signUp()
-                // if (signupError){ // if there is an error
-                //   setDialogOpen(true)
-                // } else{ // if there is not an error
-                //   setSignupError(false)
-                //   setDialogOpen(false)
-                // }
             }}
           >
             Sign Up
@@ -446,7 +453,7 @@ function LoginButton(props){
                 console.log(password)
                 setEmail('')
                 setPassword('')
-                setDialogOpen(false)
+                //setDialogOpen(false)
                 loginEmail() 
             }}
           >
