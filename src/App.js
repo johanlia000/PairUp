@@ -545,34 +545,7 @@ function TaskBar(props){
     <ExitToAppIcon/>
   </Button>
     
-    {/* <Button 
-        className="btn-icon btn-2" 
-        color='info' 
-        type="button"
-        onClick={()=> {
-          console.log('clicked + button to add plan')
-          props.openTrip()
-        }}
-      >
-          <span className="btn-inner--icon">
-            <AddCircleOutlineIcon/>
-          </span>
-      </Button>
-
-   
-      <Button 
-        className="btn-icon btn-2 logout" 
-        color='info' 
-        type="button"
-        onClick={()=> {
-          console.log('clicked logout')
-          logout()
-        }}
-      >
-          <span className="btn-inner--icon">
-            <ExitToAppIcon/>
-          </span>
-      </Button> */}
+       
   </div>
 }
 
@@ -634,48 +607,7 @@ function SearchBar(props){
       <SearchIcon /> 
     </Button>
 
-    {/* <FormGroup>
-      <InputGroup className="mb-4">
-        <Input 
-          placeholder="Search" 
-          type="text" 
-          value={text} 
-          onChange={e=> setText(e.target.value)}
-          onKeyPress={async e=> {
-            if(e.key ==='Enter') {
-              searchTerm = text
-              searchedPlans = await queryPlans(searchTerm)
-              if (searchedPlans.length === 0) {
-                setMessage(true)
-              } else {
-                setMessage(false)
-              }
-              setPlans(searchedPlans)
-              setText('')
-            }
-          }}
-        />
-
-        <InputGroupAddon addonType="append">
-          <InputGroupText style={{backgroundColor: "#f5365c"}}
-            onClick={async ()=> {
-              if(text) 
-                searchTerm = text
-                searchedPlans = await queryPlans(searchTerm)
-                if (searchedPlans.length === 0) {
-                  setMessage(true)
-                } else {
-                  setMessage(false)
-                }
-                setPlans(searchedPlans)
-                setText('')
-              }}
-          >
-            <i className="ni ni-zoom-split-in" style={{color: "white"}}/>
-          </InputGroupText>
-        </InputGroupAddon>
-      </InputGroup>
-    </FormGroup> */}
+  
     </div>
     {!(message) && searchedPlans && searchedPlans.length && <TripPlans searchedPlans={searchedPlans} />}
     {message && <NoTrips />}
@@ -780,40 +712,7 @@ async function GetPhoto(tag) {
     
     {showDetails && <Dialog />}
 
-    {/* <Dialog>
-      <Card className={classes.root}>
-        <CardActionArea>
-          <CardMedia
-            className={classes.media}
-            image={props.plan.Photo}
-            title= "photo of location"
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              {props.plan.City}, {props.plan.Country}
-            </Typography>
-            <Typography gutterBottom variant="subtitle2">
-              {Date(props.plan.startDate)} - {Date(props.plan.endDate)}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              <span className="key">Trip Owner: </span><span>{props.plan.Name}</span>
-              <span className="key">Preferred Contact: </span><span className="lowercase">{props.plan.PreferredContact}</span>
-              <span className="key">Planned Activities: </span><span>{Activities(props.plan.PlannedActivities)}</span>
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-        <CardActions>
-          <Button 
-            size="small" 
-            color="primary"
-            onClick={() => setShowDetails(false)}
-            >
-            Close
-          </Button>
-        </CardActions>
-      </Card> */}
-    {/* </Dialog> */}
-
+  
     <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} className="trip-details">
         <CardMedia
             className={classes.media}
