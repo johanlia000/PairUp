@@ -184,7 +184,6 @@ function MakeTrip(props){
     </div>
 
 
-
     <div className='searchDestination'>
       <TextField  fullWidth
         label="Enter Destination" 
@@ -265,95 +264,7 @@ function MakeTrip(props){
           Save 
         </Button>
     </div>
-    
-
-    {/* Search destination search bar
-    <div className='searchDestination'>
-      <FormGroup>
-        <InputGroup className="mb-4">
-          <Input 
-            placeholder = "Search Destination"
-            type="text" 
-            value={destination} 
-            onChange={e=> setDestination(e.target.value)}
-            onKeyPress={async e=> {
-              if(e.key ==='Enter' && destination != 0) {
-                console.log("pressed enter " + destination)
-                setDestination('')
-                setDestinationSearchTerm(destination)
-              }
-            }}
-          />
-          <InputGroupAddon addonType="append">
-            <InputGroupText style={{backgroundColor: "#f5365c"}}
-              onClick={async ()=> {
-                if(destination != 0) 
-                  console.log('clicked the button: ' + destination)
-                  setDestination('')
-                  setDestinationSearchTerm(destination)
-                }}
-            >
-              <i className="ni ni-zoom-split-in" style={{color: "white"}}/>
-            </InputGroupText>
-          </InputGroupAddon>
-        </InputGroup>
-      </FormGroup>
-    </div> */}
-
-
-    
-    {/* <div className='searchActivities'>
-      <FormGroup>
-        <InputGroup className="mb-4">
-          <Input 
-            placeholder = "Search Activities"
-            type="text" 
-            value={activity} 
-            onChange={e=> setActivity(e.target.value)}
-            onKeyPress={async e=> {
-              if(e.key ==='Enter' && activity != 0) {
-                console.log('pressed enter' + activity)
-                addActivity(activites => [...activites, activity])
-                setActivity('')
-                console.log(activites)
-              }
-            }}
-          />
-          <InputGroupAddon addonType="append">
-            <InputGroupText style={{backgroundColor: "#f5365c"}}
-              onClick={async ()=> {
-                if(activity != 0) 
-                  console.log('clicked the button: ' + activity)
-                  addActivity(activites => [...activites, activity])
-                  setActivity('')
-                  console.log(activites)
-                }}
-            >
-              <i className="ni ni-zoom-split-in" style={{color: "white"}}/>
-            </InputGroupText>
-          </InputGroupAddon>
-        </InputGroup>
-      </FormGroup>
-    </div> */}
-
-    {/* Save button: You want to send all of this information to firebase */}
-    {/* <div className='saveButtonTrips'>
-      <br></br>
-      <Button 
-        style={{fontSize: "1.3rem"}}
-        color="danger" 
-        type="button"
-        onClick={async ()=> {
-          console.log('clicked the save button')
-          console.log(destination)
-          console.log(activites)
-          props.closeTrip()
-        }}
-      >
-          Save
-      </Button>           
-    </div> */}
-
+   
   </div>
 }
 
@@ -369,19 +280,7 @@ function MakeTripHeader(props){
       >
         <CancelIcon/>
     </Button>
-    {/* <Button 
-        className="btn-icon btn-2" 
-        color='info' 
-        type="button"
-        onClick={()=> {
-          props.closeTrip()
-          console.log('clicked x button to cancel out of plan')
-        }}
-      >
-          <span className="btn-inner--icon">
-            <CancelIcon/>
-          </span>
-      </Button> */}
+  
   </div>
 }
 
@@ -392,7 +291,10 @@ function LoginButton(props){
 
   var provider = new firebase.auth.GoogleAuthProvider();
 
-  const [signupError, setSignupError] = useState('')
+  const [signupErrorValue, setSignupErrorValue] = useState('')
+  console.log(signupErrorValue)
+  const [signupError, setSignupError] = useState(false)
+  console.log(signupError)
 
   // Sign up and make user on firebase with email and password
   function signUp(){
@@ -401,10 +303,24 @@ function LoginButton(props){
       setGlobal({
         state: false,
       });
-      if (error){
-        setSignupError(error['message'])
+      if(error){ // if there is an error
+        setSignupErrorValue(error.message)
+        setSignupError(true)
+      } else { // if there is no error
+        setDialogOpen(false) // close dialog
+        setSignupErrorValue('')
+        setSignupError(false)
       }
-      
+
+      // if (error){
+      //   // console.log(typeof(error.message)) // string
+      //   // console.log(error.message) // correct error message
+      //   console.log('yes there is an error.')
+      //   setSignupErrorValue(error.message)
+      //   setSignupError(true)
+      //   //console.log('setting error message for signup')
+      // }
+
     });    
   }
 
@@ -497,7 +413,7 @@ function LoginButton(props){
           </Grid>
         </div>
         
-        {/* {signupError && <div>{signupError}</div>} */}
+        {signupError && <div>{signupErrorValue}</div>}
         <div className='loginSignupButton'>
           <Button 
             variant="contained" 
@@ -508,19 +424,18 @@ function LoginButton(props){
                 console.log(password)
                 setEmail('')
                 setPassword('')
+                console.log("calling signup")
                 signUp()
-                setDialogOpen(false)
-                // if (signupError != ""){
+                // if (signupError){ // if there is an error
                 //   setDialogOpen(true)
-                // } else{
-                //   setSignupError('')
+                // } else{ // if there is not an error
+                //   setSignupError(false)
                 //   setDialogOpen(false)
                 // }
             }}
           >
             Sign Up
           </Button>
-          
 
           <Button 
             variant="contained" 
@@ -566,132 +481,6 @@ function LoginButton(props){
       </DialogTitle>
     </Dialog>
 
-    {/* <Modal
-      className="modal-dialog-centered"
-      size="sm"
-      isOpen={modalOpen}
-      toggle={() => setModalOpen(!modalOpen)}
-    >
-      <div className="modal-body p-0">
-        <Card className="bg-secondary shadow border-0">
- 
-          <CardBody className="px-lg-5 py-lg-5 cardBody">
-            <div className="signIn">
-              <small>Sign In</small>
-            </div>
-            <Form role="form">
-              <FormGroup className="mb-3">
-                <InputGroup className="input-group-alternative">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText style={{backgroundColor: "#f5365c"}}>
-                      <i className="ni ni-email-83" style={{color: "white"}}/>
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input 
-                    placeholder="Email" 
-                    type="email" 
-                    value={email} 
-                    onChange={e=> setEmail(e.target.value)}
-                  />
-                </InputGroup>
-              </FormGroup>
-              <FormGroup>
-                <InputGroup className="input-group-alternative">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText style={{backgroundColor: "#f5365c"}}>
-                      <i className="ni ni-lock-circle-open" style={{color: "white"}}/>
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input 
-                    placeholder="Password" 
-                    type="password" 
-                    value={password}
-                    onChange={e=> setPassword(e.target.value)}
-                    // onKeyPress={e=> {
-                    //   if(e.key ==='Enter' && email && password) {
-                    //     console.log(email)
-                    //     console.log(password)
-                    //     setEmail('')
-                    //     setPassword('')
-                    //     setModalOpen(false)
-                    //     login()
-                    //   }
-                    // }}
-                  />
-                </InputGroup>
-              </FormGroup>
-              <div className="text-center">
-                <Button
-                  className="my-4 signup-button"
-                  color="info"
-                  type="button"
-                  onClick={async ()=> {
-                    console.log("email + " + email)
-                    console.log("password + " + password)
-                    if(email.length > 0 || password.length > 0) 
-                      console.log("hello" + email)
-                      console.log("yee" + password)
-                      setEmail('')
-                      setPassword('')
-                      setGlobal({
-                        state: false,
-                      });
-                      setModalOpen(false)
-                      signUp() 
-                  }    
-                  }
-                >
-                  Sign Up
-                </Button>
-
-                <Button
-                  className="my-4"
-                  color="info"
-                  type="button"
-                  onClick={async ()=> {
-                    console.log("email + " + email)
-                    console.log("password + " + password)
-                    if(email.length > 0 || password.length > 0) 
-                      console.log("hello" + email)
-                      console.log("yee" + password)
-                      setEmail('')
-                      setPassword('')
-                      setModalOpen(false)
-                      setGlobal({
-                        state: false,
-                      });
-                      loginEmail() 
-                  }}
-                >
-                  Login
-                </Button>
-              </div>
-              <div className="text-center">
-              <Button
-                  className="my-4"
-                  color = 'primary'
-                  type="button"
-                  onClick={async ()=> {
-                    if(email && password) 
-                      console.log(email)
-                      console.log(password)
-                      setEmail('')
-                      setPassword('')
-                      setGlobal({
-                        state: false,
-                      });
-                      setModalOpen(false)
-                      googleLogin() // calls the function given by firebase
-                  }}
-                >
-                  Google
-                </Button>
-              </div>
-            </Form>
-          </CardBody>
-        </Card>
-      </div>
-    </Modal> */}
   </div>
 }
 
