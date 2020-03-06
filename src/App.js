@@ -35,6 +35,7 @@ import {
 } from '@material-ui/pickers';
 
 import 'date-fns';
+import * as moment from 'moment';
 
 
 // reactstrap components
@@ -154,7 +155,7 @@ function MakeTrip(props){
   const [selectedEndDate, setSelectedEndDate] = React.useState(null);
   console.log("selected end date: " + selectedEndDate)
   console.log(typeof(selectedEndDate)) // object
-  console.log("test" + selectedEndDate)
+  
 
   const handleDateChangeStart = date => {
     console.log("Calling handleDateChange - Start date")
@@ -169,7 +170,12 @@ function MakeTrip(props){
   return <div className='makeTrip'>
     <div className='userTripInputs'>
       <div className='destinationChosen'><b>Destination: </b> {destination}</div>
-      <div className='dateChosen'><b>Date: </b>  </div>
+      <div className='dateChosen'><b>Start Date: </b>
+        {selectedStartDate && moment(selectedStartDate).format('MMMM Do YYYY')}
+      </div>
+      <div className='dateChosen'><b>End Date: </b>
+        {selectedEndDate && moment(selectedEndDate).format('MMMM Do YYYY')}
+      </div>
       <div className='activitiesChosen'><b>Activities: </b> 
         {activites.map((item, index)=>
         <span key={index}> 
