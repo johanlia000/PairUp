@@ -126,7 +126,7 @@ function App() {
 
 
 
-function MakeTrip(props){
+async function MakeTrip(props){
   const [citySearchTerm, setCitySearchTerm] = useState('')
   const [city, setCity] = useState('')
 
@@ -208,6 +208,7 @@ function MakeTrip(props){
         <KeyboardDatePicker
               disableToolbar
               variant="inline"
+              color="secondary"
               format="MM/dd/yyyy"
               margin="normal"
               id="date-picker-dialog"
@@ -230,6 +231,7 @@ function MakeTrip(props){
           variant="inline"
           format="MM/dd/yyyy"
           margin="normal"
+          color="secondary"
           id="date-picker-dialog"
           label="End Date"
           value={selectedEndDate}
@@ -246,8 +248,9 @@ function MakeTrip(props){
 
     <div className='searchDestination'>
       <TextField  fullWidth
-        label="Enter City" 
+        label="Enter City or Cities (if more than 1, separate by comma)" 
         variant="outlined" 
+        color="secondary"
         value={citySearchTerm} 
         onChange={e=> setCitySearchTerm(e.target.value)}
             onKeyPress={async e=> {
@@ -260,8 +263,8 @@ function MakeTrip(props){
       />
       <Button 
         id='search-button'
-        variant="contained" 
-        color="primary"
+        variant="outlined" 
+        color="secondary"
         onClick={async ()=> {
           if(citySearchTerm != 0) 
             console.log('clicked the button: ' + citySearchTerm)
@@ -277,6 +280,7 @@ function MakeTrip(props){
       <TextField  fullWidth
         label="Enter Country" 
         variant="outlined" 
+        color="secondary"
         value={countrySearchTerm} 
         onChange={e=> setCountrySearchTerm(e.target.value)}
             onKeyPress={async e=> {
@@ -289,8 +293,8 @@ function MakeTrip(props){
       />
       <Button 
         id='search-button'
-        variant="contained" 
-        color="primary"
+        variant="outlined" 
+        color="secondary"
         onClick={async ()=> {
           if(citySearchTerm != 0) 
             console.log('clicked the button: ' + countrySearchTerm)
@@ -307,6 +311,7 @@ function MakeTrip(props){
       <TextField  fullWidth
           label="Enter Activities" 
           variant="outlined" 
+          color="secondary"
           value={activity} 
             onChange={e=> setActivity(e.target.value)}
             onKeyPress={async e=> {
@@ -321,8 +326,8 @@ function MakeTrip(props){
 
         <Button 
           id='search-button'
-          variant="contained" 
-          color="primary"
+          variant="outlined" 
+          color="secondary"
           onClick={async ()=> {
             if(activity != 0) 
               console.log('clicked the button: ' + activity)
@@ -355,6 +360,22 @@ function MakeTrip(props){
             } // else if (!city && country) {GetPhoto({country})}
 
             props.closeTrip()
+            let travelPlans = db.collection("travelplans");
+            let user = firebase.auth().currentUser
+            let url = GetPhoto(city)
+            console.log("hopefully: " + url)
+            travelPlans.add({
+                City: city,
+                Country: country,
+                Name: "nothing yet",
+                PreferredContact: "nothing yet",
+                Photo: url,
+                PlannedActivities: activites,
+                StartDate: selectedStartDate,
+                EndDate: selectedEndDate,
+                UserID: user.uid,
+                Search: [city, country, "nothing yet", "nothing yet", activites, selectedStartDate, selectedEndDate]
+            })
           }}
         >
           Save 
@@ -369,6 +390,7 @@ function MakeTripHeader(props){
       <Button 
         variant="contained"
         color="primary"
+        style={{backgroundColor: "#f5365c"}}
         onClick={()=> {
           console.log('clicked + button to add plan')
           props.closeTrip()
@@ -474,7 +496,7 @@ function LoginButton(props){
       aria-labelledby="simple-dialog-title">
       <DialogTitle id="simple-dialog-title">
         <div className='loginPopupLogo'>
-          <img className = 'logoPic' src="/Photos/logo.png" alt="PairUp Logo"/>
+          <img className = 'logoPic' src="/Photos/logooutlined.png" alt="PairUp Logo"/>
         </div>
         <div className='email-login'>
           <Grid container spacing={1} alignItems="flex-end">
@@ -653,8 +675,10 @@ function SearchBar(props){
  return <div>
    <div className='search-bar'>
     <TextField  fullWidth
-      label="Search" 
-      variant="outlined" 
+      id="outlined-secondary"
+      label="Search"
+      variant="outlined"
+      color="secondary"
       value={text} 
       onChange={e=> setText(e.target.value)}
       onKeyPress={async e=> {
@@ -674,10 +698,9 @@ function SearchBar(props){
     />
 
     <Button 
-      style={{backgroundColor: "#f5365c"}}
+      color="secondary"
+      variant="outlined"
       id='search-button'
-      variant="contained"
-      color="primary"
       onClick={async ()=> {
         if(text) 
           searchTerm = text
@@ -784,7 +807,7 @@ function SearchBar(props){
             </Typography>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleClose} color="primary">
+          <Button autoFocus onClick={handleClose} variant="outlined" color="secondary">
             Close
           </Button>
         </DialogActions>
