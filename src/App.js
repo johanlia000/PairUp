@@ -118,6 +118,9 @@ function App() {
       console.log(user)
       if (user) {
           setUser(user)
+          setGlobal({
+            state: false,
+          });
       } else {
         // No user is signed in.
           setUser(null)
@@ -616,8 +619,9 @@ function SearchBar(props){
     />
 
     <Button 
+      style={{backgroundColor: "#f5365c"}}
       id='search-button'
-      variant="outlined" 
+      variant="contained"
       color="primary"
       onClick={async ()=> {
         if(text) 
@@ -637,7 +641,7 @@ function SearchBar(props){
 
   
     </div>
-    {!(message) && searchedPlans && searchedPlans.length && <TripPlans searchedPlans={searchedPlans} />}
+    {!(message) && searchedPlans && searchedPlans.length > 0 && <TripPlans searchedPlans={searchedPlans} />}
     {message && <NoTrips />}
   </div>
 }
@@ -673,10 +677,7 @@ async function GetPhoto(tag) {
    imgUrl += imgSecret
    imgUrl += ".jpg"
 
-   // send to the database in the respective entry
-   // probably have to pass in the specific travel plan as a parameter (database object?)
-   // this method gets queried for each new travel plan to get a photo
-   
+   return imgUrl
  }
 
  function TripPlans({searchedPlans, setMessage, message}) {
