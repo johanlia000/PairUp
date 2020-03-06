@@ -248,7 +248,7 @@ function MakeTrip(props){
 
     <div className='saveButtonTrips'>
       <Button 
-          style={{backgroundColor: "#f5365c", fontSize:'1.3rem'}}
+          style={{backgroundColor: "#f5365c"}}
           className='saveButtonTrip'
           variant="contained" 
           size="large"
@@ -363,6 +363,9 @@ function LoginButton(props){
 
   return <div>
     <Button 
+      style={{backgroundColor: "#f5365c", marginTop: "1.5rem"}}    
+      className="button-container" 
+      size="large"
       variant="contained" 
       color="primary"
       onClick={() => setDialogOpen(true)}
@@ -372,112 +375,115 @@ function LoginButton(props){
     <Dialog 
       open={dialogOpen}
       onClose={() => setDialogOpen(false)}
-      aria-labelledby="simple-dialog-title">
-      <DialogTitle id="simple-dialog-title">
-        <div className='loginPopupLogo'>
-          <img className = 'logoPic' src="/Photos/logo.png" alt="PairUp Logo"/>
-        </div>
-        <div className='email-login'>
-          <Grid container spacing={1} alignItems="flex-end">
-            <Grid item>
-              <EmailIcon />
+      className="hello">
+      <DialogTitle>
+        <div>
+          <div className='loginPopupLogo'>
+            <img className = 'logoPic' src="/Photos/logooutlined.png" alt="PairUp Logo"/>
+          </div>
+          <div className='email-login'>
+            <Grid container spacing={1} alignItems="flex-end">
+              <Grid item>
+                <EmailIcon />
+              </Grid>
+              <Grid item>
+                <TextField 
+                  id="input-with-icon-grid" 
+                  label="Email" 
+                  placeholder="Email" 
+                  type="email" 
+                  value={email} 
+                  onChange={e=> setEmail(e.target.value)}
+                />
+              </Grid>
+            </Grid>        
+          </div>
+          
+          <div className='password-login'>
+            <Grid container spacing={1} alignItems="flex-end">
+              <Grid item>
+                <LockOpenIcon />
+              </Grid>
+              <Grid item>
+                <TextField 
+                  id="input-with-icon-grid" 
+                  label="Password" 
+                  placeholder="Password" 
+                  type="password" 
+                  value={password}
+                  onChange={e=> setPassword(e.target.value)}
+                />
+              </Grid>
             </Grid>
-            <Grid item>
-              <TextField 
-                id="input-with-icon-grid" 
-                label="Email" 
-                placeholder="Email" 
-                type="email" 
-                value={email} 
-                onChange={e=> setEmail(e.target.value)}
-              />
-            </Grid>
-          </Grid>        
+          </div>
+          
+          {signupError && <div>{signupErrorValue}</div>}
+          <div className='loginSignupButton'>
+            <Button 
+              variant="contained" 
+              color="primary"
+              size="large"
+              style={{backgroundColor: "#f5365c", marginRight:".75rem"}}
+              onClick={async ()=> {
+                if(email && password) 
+                  console.log(email)
+                  console.log(password)
+                  setEmail('')
+                  setPassword('')
+                  console.log("calling signup")
+                  signUp()
+                  // if (signupError){ // if there is an error
+                  //   setDialogOpen(true)
+                  // } else{ // if there is not an error
+                  //   setSignupError(false)
+                  //   setDialogOpen(false)
+                  // }
+              }}
+            >
+              Sign Up
+            </Button>
+
+            <Button 
+              variant="contained" 
+              color="primary"
+              style={{backgroundColor: "#f5365c", marginLeft:".75rem"}}
+              size="large"
+              onClick={async ()=> {
+                if(email && password) 
+                  console.log(email)
+                  console.log(password)
+                  setEmail('')
+                  setPassword('')
+                  setDialogOpen(false)
+                  loginEmail() 
+              }}
+            >
+              Login
+            </Button>
+          </div>
+
+          <div className='orGoogle'>or login with</div>
+
+          <div className='googleButton'>
+            <Button 
+              variant="contained" 
+              color="primary"
+              size="large"
+              style={{backgroundColor: "#ff9800"}}
+              onClick={async ()=> {
+                if(email && password) 
+                  console.log(email)
+                  console.log(password)
+                  setEmail('')
+                  setPassword('')
+                  setDialogOpen(false)
+                  googleLogin() 
+              }}
+            >
+              Google
+            </Button>
+          </div>
         </div>
-        
-        <div className='password-login'>
-           <Grid container spacing={1} alignItems="flex-end">
-            <Grid item>
-              <LockOpenIcon />
-            </Grid>
-            <Grid item>
-              <TextField 
-                id="input-with-icon-grid" 
-                label="Password" 
-                placeholder="Password" 
-                type="password" 
-                value={password}
-                onChange={e=> setPassword(e.target.value)}
-              />
-            </Grid>
-          </Grid>
-        </div>
-        
-        {signupError && <div>{signupErrorValue}</div>}
-        <div className='loginSignupButton'>
-          <Button 
-            variant="contained" 
-            color="primary"
-            onClick={async ()=> {
-              if(email && password) 
-                console.log(email)
-                console.log(password)
-                setEmail('')
-                setPassword('')
-                console.log("calling signup")
-                signUp()
-                // if (signupError){ // if there is an error
-                //   setDialogOpen(true)
-                // } else{ // if there is not an error
-                //   setSignupError(false)
-                //   setDialogOpen(false)
-                // }
-            }}
-          >
-            Sign Up
-          </Button>
-
-          <Button 
-            variant="contained" 
-            color="primary"
-            onClick={async ()=> {
-              if(email && password) 
-                console.log(email)
-                console.log(password)
-                setEmail('')
-                setPassword('')
-                setDialogOpen(false)
-                loginEmail() 
-            }}
-          >
-            Login
-          </Button>
-        </div>
-
-        <div className='orGoogle'>or login with</div>
-
-        <div className='googleButton'>
-          <Button 
-            variant="contained" 
-            color="primary"
-            style={{backgroundColor: "#DB4437", outlineColor:"#DB4437"}}
-            onClick={async ()=> {
-              if(email && password) 
-                console.log(email)
-                console.log(password)
-                setEmail('')
-                setPassword('')
-                setDialogOpen(false)
-                googleLogin() 
-            }}
-          >
-            Google
-          </Button>
-        </div>
-        
-
-
-
       </DialogTitle>
     </Dialog>
 
@@ -490,7 +496,7 @@ function Header(props) {
       <div className='logo'>
         <img className = 'logoPic' src="/Photos/logo.png" alt="PairUp Logo"/>
       </div>
-      <div className='title'>PairUp</div>
+      <Typography variant="h5" className='title'>PairUp</Typography>
     </div>
 
     <div className="right-header">
@@ -518,6 +524,8 @@ function TaskBar(props){
   <Button 
     variant="contained"
     color="primary"
+    size="large"
+    style={{backgroundColor: "#f5365c", marginRight:".25rem"}}
     onClick={()=> {
       console.log('clicked + button to add plan')
       props.openTrip()
@@ -530,6 +538,8 @@ function TaskBar(props){
     className='logout'
     variant="contained"
     color="primary"
+    size="large"
+    style={{backgroundColor: "#f5365c", marginLeft:".25rem"}}
     onClick={()=> {
       console.log('clicked logout')
       logout()
@@ -609,7 +619,7 @@ function SearchBar(props){
 
     <Button 
       id='search-button'
-      variant="contained" 
+      variant="outlined" 
       color="primary"
       onClick={async ()=> {
         if(text) 
@@ -899,8 +909,8 @@ function WelcomePage() {
       <div className="logo-container">
         <img src="/Photos/logo.png" className= "welcome-logo" />
       </div>
-      <Typography className="brand" variant="h1" component="h2" gutterBottom>Welcome to PairUp!</Typography>
-      <LoginButton className="button-container"/>
+      <Typography className="brand" variant="h2" component="h2" gutterBottom>Welcome to PairUp!</Typography>
+      <LoginButton />
     </div>
   </div>
 }
