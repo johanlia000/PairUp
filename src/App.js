@@ -352,6 +352,7 @@ function MakeTrip(props){
             console.log("City: "+ city)
             console.log("Country: "+ country)
             console.log("Activities: "+ activites)
+            console.log("type activies: " + typeof(activites))
             console.log("Start Date: "+ selectedStartDate) // this is an object
             console.log("End Date: "+ selectedEndDate) // this is an object
             if(city){
@@ -359,7 +360,7 @@ function MakeTrip(props){
               console.log(test)
             } // else if (!city && country) {GetPhoto({country})}
 
-            // props.closeTrip()
+            props.closeTrip()
             // let travelPlans = db.collection("travelplans");
             // let user = firebase.auth().currentUser
             // let url = GetPhoto(city)
