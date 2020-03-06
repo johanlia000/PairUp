@@ -38,23 +38,6 @@ import 'date-fns';
 import * as moment from 'moment';
 
 
-// reactstrap components
-// import {
-//   FormGroup,
-//   Button,
-//   Input,
-//   InputGroupAddon,
-//   InputGroupText,
-//   InputGroup,
-//   Card,
-//   CardHeader,
-//   CardBody,
-//   Form,
-//   Modal,
-//   ModalHeader,
-//   ModalBody,
-//   ModalFooter
-// } from "reactstrap";
 import * as firebase from "firebase/app"
 import "firebase/storage"
 import { db, queryPlans } from './db'
@@ -134,7 +117,7 @@ function App() {
     <div className="App">
       {!showIntro && <Header user={user} tripPlan={tripPlan} setTripPlan={setTripPlan}/>}
       {!showIntro && !tripPlan && <SearchBar />}
-      {!showIntro && tripPlan && <MakeTrip closeTrip={()=> setTripPlan(false)}/>}
+      {!showIntro && tripPlan && <MakeTrip  closeTrip={()=> setTripPlan(false)}/>}
       {!showIntro &&<Footer />}
       {showIntro && <WelcomePage />}     
     </div>
@@ -164,6 +147,47 @@ function MakeTrip(props){
   const handleDateChangeEnd = date => {
     setSelectedEndDate(date);
   }; 
+
+  async function GetPhoto(tag) {
+    let tag2 = tag.split(":")
+    let tag3 = tag2[1]
+    let tag4 = tag3.substring(1, tag3.length -2)
+    let tagFinal = tag4
+    if (tag4.split(" ").length > 1) {
+      tagFinal = tag4.split(" ")[0] + "+" + tag4.split(" ")[1]
+    }
+    console.log(tagFinal)
+    const key = "2b69d30a533e2e4eb9a09fd0fc84ce32"
+    let url = "https://api.flickr.com/services/rest/?method=flickr.photos.search"
+    let id=  "187059476@N02"
+    url += '&api_key='+ key
+    url += "&user_id"+ id
+    url += "%40N02"
+    url += "&tags=" + tagFinal
+    url += "&text=" + tagFinal
+    url += "&content_type=1"
+    url += "&media=photos"
+    url += "&per_page=1"
+    url += "&geo_context=2"
+    url += "&format=json&nojsoncallback=1"
+    const info = await fetch(url)
+    const plan = await info.json()
+    let imgID = plan["photos"]["photo"][0]["id"]
+    let imgFarmID = plan["photos"]["photo"][0]["farm"]
+    let imgServerID = plan["photos"]["photo"][0]["server"]
+    let imgSecret = plan["photos"]["photo"][0]["secret"]
+    let imgUrl = "https://farm" 
+    imgUrl += imgFarmID
+    imgUrl += ".staticflickr.com/"
+    imgUrl += imgServerID
+    imgUrl += "/"
+    imgUrl += imgID
+    imgUrl += "_"
+    imgUrl += imgSecret
+    imgUrl += ".jpg"
+    console.log(imgUrl)
+    return imgUrl
+  }
 
   return <div className='makeTrip'>
     <div className='userTripInputs'>
@@ -297,7 +321,7 @@ function MakeTrip(props){
           value={activity} 
             onChange={e=> setActivity(e.target.value)}
             onKeyPress={async e=> {
-              if(e.key ==='Enter' && activity != 0) {
+              if(e.key ==='Enter') {
                 console.log('pressed enter' + activity)
                 addActivity(activites => [...activites, activity])
                 setActivity('')
@@ -336,23 +360,32 @@ function MakeTrip(props){
             console.log("Activities: "+ activites)
             console.log("Start Date: "+ selectedStartDate) // this is an object
             console.log("End Date: "+ selectedEndDate) // this is an object
+            if(city){
+              var url = await GetPhoto(JSON.stringify({city}))
+            } else if (!city && country) {var url = await GetPhoto({country})}
             props.closeTrip()
-            let travelPlans = db.collection("travelplans");
+            let travelPlans = db.collection("travelplans").doc()
             let user = firebase.auth().currentUser
-            let url = GetPhoto(city)
-            console.log("hopefully: " + url)
-            travelPlans.add({
-                City: city,
-                Country: country,
+            travelPlans.set({
+                City: city.toLowerCase(),
+                Country: country.toLowerCase(),
                 Name: "nothing yet",
                 PreferredContact: "nothing yet",
                 Photo: url,
-                PlannedActivities: activites,
                 StartDate: selectedStartDate,
                 EndDate: selectedEndDate,
                 UserID: user.uid,
-                Search: [city, country, "nothing yet", "nothing yet", activites, selectedStartDate, selectedEndDate]
+                Search: [city.toLowerCase(), country.toLowerCase(), "nothing yet", "nothing yet", selectedStartDate, selectedEndDate]
             })
+            for (let i = 0; i < activites.length; i ++) {
+              travelPlans.update({
+                  PlannedActivities: firebase.firestore.FieldValue.arrayUnion(activites[i].toLowerCase())
+              });
+              travelPlans.update({
+                Search: firebase.firestore.FieldValue.arrayUnion(activites[i].toLowerCase())
+              });
+            }
+
           }}
         >
           Save 
@@ -701,39 +734,6 @@ function SearchBar(props){
   </div>
 }
 
-async function GetPhoto(tag) {
-   const key = "fdb273ec503fcd089ceece3adbb2e0e0"
-   let url = "https://api.flickr.com/services/rest/?method=flickr.photos.search"
-   let id=  "187059476"
-   url += '&api_key='+ key
-   url += "&user_id"+ id
-   url += "%40N02"
-   url += "&tags=" + tag
-   url += "&text=" + tag
-   url += "&content_type=1"
-   url += "&media=photos"
-   url += "&per_page=1"
-   url += "&page=1"
-   url += "&geo_context=2"
-   url += "&format=json&nojsoncallback=1"
-   const info = await fetch(url)
-   const plan = await info.json()
-   let imgID = plan["photos"]["photo"][0]["id"]
-   let imgFarmID = plan["photos"]["photo"][0]["farm"]
-   let imgServerID = plan["photos"]["photo"][0]["server"]
-   let imgSecret = plan["photos"]["photo"][0]["secret"]
-   let imgUrl = "https://farm" 
-   imgUrl += imgFarmID
-   imgUrl += ".staticflickr.com/"
-   imgUrl += imgServerID
-   imgUrl += "/"
-   imgUrl += imgID
-   imgUrl += "_"
-   imgUrl += imgSecret
-   imgUrl += ".jpg"
-
-   return imgUrl
- }
 
  function TripPlans({searchedPlans, setMessage, message}) {
   
@@ -788,7 +788,7 @@ async function GetPhoto(tag) {
             {props.plan.City}, {props.plan.Country}
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
-            {Date(props.plan.startDate)} - {Date(props.plan.endDate)}
+            {(props.plan.startDate)} - {(props.plan.endDate)}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -808,7 +808,7 @@ async function GetPhoto(tag) {
               {props.plan.City}, {props.plan.Country}
             </Typography>
             <Typography gutterBottom variant="subtitle2">
-              {Date(props.plan.startDate)} - {Date(props.plan.endDate)}
+              {(props.plan.startDate)} - {(props.plan.endDate)}
             </Typography>
             <Typography variant="body2">
               <span className="key">Trip Owner: </span><span>{props.plan.Name}</span>
