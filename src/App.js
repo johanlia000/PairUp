@@ -142,8 +142,7 @@ function App() {
 }
 
 
-
-async function MakeTrip(props){
+function MakeTrip(props){
   const [citySearchTerm, setCitySearchTerm] = useState('')
   const [city, setCity] = useState('')
 
@@ -231,7 +230,7 @@ async function MakeTrip(props){
 
     <div className='searchDestination'>
       <TextField  fullWidth
-        label="Enter City or Cities (if more than 1, separate by comma)" 
+        label="Enter City" 
         variant="outlined" 
         color="secondary"
         value={citySearchTerm} 
