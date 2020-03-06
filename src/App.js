@@ -35,6 +35,7 @@ import {
 } from '@material-ui/pickers';
 
 import 'date-fns';
+import * as moment from 'moment';
 
 
 // reactstrap components
@@ -143,36 +144,38 @@ function App() {
 
 
 function MakeTrip(props){
-  const [destinationSearchTerm, setDestinationSearchTerm] = useState('')
-  const [destination, setDestination] = useState('')
+  const [citySearchTerm, setCitySearchTerm] = useState('')
+  const [city, setCity] = useState('')
+
+  const [countrySearchTerm, setCountrySearchTerm] = useState('')
+  const [country, setCountry] = useState('')
 
   const [activites, addActivity] = useState([])
   const [activity, setActivity] = useState('')
 
-  //const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
   const [selectedStartDate, setSelectedStartDate] = React.useState(null);
-  console.log("selected start date: " + selectedStartDate)
-  console.log(typeof(selectedStartDate)) // object
 
   const [selectedEndDate, setSelectedEndDate] = React.useState(null);
-  console.log("selected end date: " + selectedEndDate)
-  console.log(typeof(selectedEndDate)) // object
-  console.log("test" + selectedEndDate)
+  
 
   const handleDateChangeStart = date => {
-    console.log("Calling handleDateChange - Start date")
     setSelectedStartDate(date);
   }; 
   
   const handleDateChangeEnd = date => {
-    console.log("Calling handleDateChange - End date")
     setSelectedEndDate(date);
   }; 
 
   return <div className='makeTrip'>
     <div className='userTripInputs'>
-      <div className='destinationChosen'><b>Destination: </b> {destination}</div>
-      <div className='dateChosen'><b>Date: </b>  </div>
+      <div className='destinationChosen'><b>City: </b> {city}</div>
+      <div className='destinationChosen'><b>Country: </b> {country}</div>
+      <div className='dateChosen'><b>Start Date: </b>
+        {selectedStartDate && moment(selectedStartDate).format('MMMM Do YYYY')}
+      </div>
+      <div className='dateChosen'><b>End Date: </b>
+        {selectedEndDate && moment(selectedEndDate).format('MMMM Do YYYY')}
+      </div>
       <div className='activitiesChosen'><b>Activities: </b> 
         {activites.map((item, index)=>
         <span key={index}> 
@@ -226,15 +229,15 @@ function MakeTrip(props){
 
     <div className='searchDestination'>
       <TextField  fullWidth
-        label="Enter Destination" 
+        label="Enter City" 
         variant="outlined" 
-        value={destinationSearchTerm} 
-        onChange={e=> setDestinationSearchTerm(e.target.value)}
+        value={citySearchTerm} 
+        onChange={e=> setCitySearchTerm(e.target.value)}
             onKeyPress={async e=> {
-              if(e.key ==='Enter' && destinationSearchTerm != 0) {
-                console.log("pressed enter " + destinationSearchTerm)
-                setDestination(destinationSearchTerm)
-                setDestinationSearchTerm('')
+              if(e.key ==='Enter' && citySearchTerm != 0) {
+                console.log("pressed enter " + citySearchTerm)
+                setCity(citySearchTerm)
+                setCitySearchTerm('')
               }
             }}
       />
@@ -243,10 +246,39 @@ function MakeTrip(props){
         variant="contained" 
         color="primary"
         onClick={async ()=> {
-          if(destinationSearchTerm != 0) 
-            console.log('clicked the button: ' + destinationSearchTerm)
-            setDestination(destinationSearchTerm)
-            setDestinationSearchTerm('')
+          if(citySearchTerm != 0) 
+            console.log('clicked the button: ' + citySearchTerm)
+            setCity(citySearchTerm)
+            setCitySearchTerm('')
+          }}
+      >
+        <SearchIcon /> 
+      </Button>
+    </div>
+
+    <div className='searchDestination'>
+      <TextField  fullWidth
+        label="Enter Country" 
+        variant="outlined" 
+        value={countrySearchTerm} 
+        onChange={e=> setCountrySearchTerm(e.target.value)}
+            onKeyPress={async e=> {
+              if(e.key ==='Enter' && countrySearchTerm != 0) {
+                console.log("pressed enter " + countrySearchTerm)
+                setCountry(countrySearchTerm)
+                setCountrySearchTerm('')
+              }
+            }}
+      />
+      <Button 
+        id='search-button'
+        variant="contained" 
+        color="primary"
+        onClick={async ()=> {
+          if(citySearchTerm != 0) 
+            console.log('clicked the button: ' + countrySearchTerm)
+            setCountry(countrySearchTerm)
+            setCountrySearchTerm('')
           }}
       >
         <SearchIcon /> 
@@ -294,11 +326,12 @@ function MakeTrip(props){
           size="large"
           color="primary"
           onClick={async ()=> {
-            console.log('clicked the save button')
-            console.log("Destination: "+ destination)
+            console.log('Clicked the save button')
+            console.log("City: "+ city)
+            console.log("Country: "+ country)
             console.log("Activities: "+ activites)
-            console.log("Start Date: "+ selectedStartDate)
-            console.log("End Date: "+ selectedEndDate)
+            console.log("Start Date: "+ selectedStartDate) // this is an object
+            console.log("End Date: "+ selectedEndDate) // this is an object
             props.closeTrip()
           }}
         >

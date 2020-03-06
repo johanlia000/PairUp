@@ -183,6 +183,7 @@ html,body,#root{
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  height: 85vh;
   overflow: auto;
 }
 
@@ -215,11 +216,13 @@ html,body,#root{
 }
 
 .dateChosen{
+  margin-top: .4rem;
   margin-left: 1rem;
   text-align: left;
 }
 
 .activitiesChosen{
+  margin-top: .4rem;
   margin-left: 1rem;
   margin-right: 1rem;
   margin-bottom: .4rem;
