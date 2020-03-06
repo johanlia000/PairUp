@@ -104,7 +104,7 @@ const DialogActions = withStyles(theme => ({
   },
 }))(MuiDialogActions);
 setGlobal({
-  state: false
+  state: true
 })
 
 
@@ -291,7 +291,7 @@ function MakeTrip(props){
 
     <div className='saveButtonTrips'>
       <Button 
-          style={{backgroundColor: "#f5365c", fontSize:'1.3rem'}}
+          style={{backgroundColor: "#f5365c"}}
           className='saveButtonTrip'
           variant="contained" 
           size="large"
@@ -342,45 +342,40 @@ function LoginButton(props){
   // Sign up and make user on firebase with email and password
   function signUp(){
     console.log("SIGNUP")
-    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-      console.log(error)
-      if(error){ // if there is an error
-        console.log('going into the if error')
-        setSignupErrorValue(error.message)
-        setSignupError(true)
-      } else { // if there is no error
-        setGlobal({
-          state: false,
-        });
-        setDialogOpen(false) // close dialog
-        setSignupErrorValue('')
-        setSignupError(false)
-      }
-
-    });    
+    firebase.auth().createUserWithEmailAndPassword(email, password).then(function(result) {
+      setGlobal({
+        state: false,
+      });
+      setDialogOpen(false) // close dialog
+      setSignupErrorValue('')
+      setSignupError(false)
+      console.log("in the error-free branch")
+    }).catch(function(error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log("error: " + error)
+      setSignupErrorValue(error.message)
+      setSignupError(true)
+    })
   }
 
   // Login with email and password
   function loginEmail(){
-    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+    firebase.auth().signInWithEmailAndPassword(email, password).then(function(result) {
+      setGlobal({
+        state: false,
+      });
+      setDialogOpen(false) // close dialog
+      setSignupErrorValue('')
+      setSignupError(false)
+      console.log("in the error-free branch")
+    }).catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
       console.log("error: " + error)
-      if(error){ // if there is an error
-        console.log('going into the if error')
-        setSignupErrorValue(error.message)
-        setSignupError(true)
-      } else { // if there is no error
-        setGlobal({
-          state: false,
-        });
-        setDialogOpen(false) // close dialog
-        setSignupErrorValue('')
-        setSignupError(false)
-        console.log("in the no error else")
-        
-      }
+      setSignupErrorValue(error.message)
+      setSignupError(true)
     });
   }
 
@@ -409,6 +404,9 @@ function LoginButton(props){
 
   return <div>
     <Button 
+      style={{backgroundColor: "#f5365c", marginTop: "1.5rem"}}    
+      className="button-container" 
+      size="large"
       variant="contained" 
       color="primary"
       onClick={() => setDialogOpen(true)}
@@ -517,10 +515,6 @@ function LoginButton(props){
             Google
           </Button>
         </div>
-        
-
-
-
       </DialogTitle>
     </Dialog>
 
@@ -533,7 +527,7 @@ function Header(props) {
       <div className='logo'>
         <img className = 'logoPic' src="/Photos/logo.png" alt="PairUp Logo"/>
       </div>
-      <div className='title'>PairUp</div>
+      <Typography variant="h5" className='title'>PairUp</Typography>
     </div>
 
     <div className="right-header">
@@ -561,6 +555,8 @@ function TaskBar(props){
   <Button 
     variant="contained"
     color="primary"
+    size="large"
+    style={{backgroundColor: "#f5365c", marginRight:".25rem"}}
     onClick={()=> {
       console.log('clicked + button to add plan')
       props.openTrip()
@@ -573,6 +569,8 @@ function TaskBar(props){
     className='logout'
     variant="contained"
     color="primary"
+    size="large"
+    style={{backgroundColor: "#f5365c", marginLeft:".25rem"}}
     onClick={()=> {
       console.log('clicked logout')
       logout()
@@ -625,7 +623,7 @@ function SearchBar(props){
 
     <Button 
       id='search-button'
-      variant="contained" 
+      variant="outlined" 
       color="primary"
       onClick={async ()=> {
         if(text) 
@@ -841,8 +839,8 @@ function WelcomePage() {
       <div className="logo-container">
         <img src="/Photos/logo.png" className= "welcome-logo" />
       </div>
-      <Typography className="brand" variant="h1" component="h2" gutterBottom>Welcome to PairUp!</Typography>
-      <LoginButton className="button-container"/>
+      <Typography className="brand" variant="h2" component="h2" gutterBottom>Welcome to PairUp!</Typography>
+      <LoginButton />
     </div>
   </div>
 }
