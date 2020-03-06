@@ -36,6 +36,7 @@ import {
 
 import 'date-fns';
 
+
 // reactstrap components
 // import {
 //   FormGroup,
@@ -60,6 +61,10 @@ import "firebase/analytics"
 import "firebase/auth";
 import { tr } from 'date-fns/locale';
 import { set } from 'date-fns';
+
+var provider = new firebase.auth.GoogleAuthProvider();
+
+
 const styles = theme => ({
   root: {
     margin: 0,
@@ -108,13 +113,14 @@ function App() {
   const [tripPlan, setTripPlan] = useState(false)
 
   useEffect(()=>{
+    
     firebase.auth().onAuthStateChanged(function(user) {
       console.log(user)
       if (user) {
-        setUser(user)
+          setUser(user)
       } else {
         // No user is signed in.
-        setUser(null)
+          setUser(null)
       }
     });
   }, [])
@@ -140,16 +146,29 @@ function MakeTrip(props){
   const [activites, addActivity] = useState([])
   const [activity, setActivity] = useState('')
 
-  const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
-  const handleDateChange = date => {
-    console.log("first" + date)
-    setSelectedDate(date);
-    console.log(selectedDate)
-  };  
+  //const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
+  const [selectedStartDate, setSelectedStartDate] = React.useState(null);
+  console.log("selected start date: " + selectedStartDate)
+  console.log(typeof(selectedStartDate)) // object
+
+  const [selectedEndDate, setSelectedEndDate] = React.useState(null);
+  console.log("selected end date: " + selectedEndDate)
+  console.log(typeof(selectedEndDate)) // object
+  console.log("test" + selectedEndDate)
+
+  const handleDateChangeStart = date => {
+    console.log("Calling handleDateChange - Start date")
+    setSelectedStartDate(date);
+  }; 
+  
+  const handleDateChangeEnd = date => {
+    console.log("Calling handleDateChange - End date")
+    setSelectedEndDate(date);
+  }; 
 
   return <div className='makeTrip'>
     <div className='userTripInputs'>
-      <div className='destinationChosen'><b>Destination: </b> {destinationSearchTerm}</div>
+      <div className='destinationChosen'><b>Destination: </b> {destination}</div>
       <div className='dateChosen'><b>Date: </b>  </div>
       <div className='activitiesChosen'><b>Activities: </b> 
         {activites.map((item, index)=>
@@ -162,25 +181,43 @@ function MakeTrip(props){
     </div>
 
     <div className='setDate'>
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDatePicker
-            disableToolbar
-            variant="inline"
-            format="MM/dd/yyyy"
-            margin="normal"
-            id="date-picker-dialog"
-            label="Start Date"
-            value={selectedDate}
-            onChange={
-              handleDateChange
-            }
-            
-            KeyboardButtonProps={{
-              'aria-label': 'change date',
-            }}
-          />
-      </MuiPickersUtilsProvider>
-        
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <KeyboardDatePicker
+              disableToolbar
+              variant="inline"
+              format="MM/dd/yyyy"
+              margin="normal"
+              id="date-picker-dialog"
+              label="Start Date"
+              value={selectedStartDate}
+              onChange={
+                handleDateChangeStart
+              }
+              
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+        </MuiPickersUtilsProvider>
+    </div>
+    <div className='setDate'>
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <KeyboardDatePicker
+          disableToolbar
+          variant="inline"
+          format="MM/dd/yyyy"
+          margin="normal"
+          id="date-picker-dialog"
+          label="End Date"
+          value={selectedEndDate}
+          onChange={
+            handleDateChangeEnd
+          }
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
+        />
+        </MuiPickersUtilsProvider>
     </div>
 
 
@@ -188,31 +225,31 @@ function MakeTrip(props){
       <TextField  fullWidth
         label="Enter Destination" 
         variant="outlined" 
-        value={destination} 
-        onChange={e=> setDestination(e.target.value)}
+        value={destinationSearchTerm} 
+        onChange={e=> setDestinationSearchTerm(e.target.value)}
             onKeyPress={async e=> {
-              if(e.key ==='Enter' && destination != 0) {
-                console.log("pressed enter " + destination)
-                setDestination('')
-                setDestinationSearchTerm(destination)
+              if(e.key ==='Enter' && destinationSearchTerm != 0) {
+                console.log("pressed enter " + destinationSearchTerm)
+                setDestination(destinationSearchTerm)
+                setDestinationSearchTerm('')
               }
             }}
       />
-
       <Button 
         id='search-button'
         variant="contained" 
         color="primary"
         onClick={async ()=> {
-          if(destination != 0) 
-            console.log('clicked the button: ' + destination)
-            setDestination('')
-            setDestinationSearchTerm(destination)
+          if(destinationSearchTerm != 0) 
+            console.log('clicked the button: ' + destinationSearchTerm)
+            setDestination(destinationSearchTerm)
+            setDestinationSearchTerm('')
           }}
       >
         <SearchIcon /> 
       </Button>
     </div>
+
 
     <div className='searchActivities'>
       <TextField  fullWidth
@@ -255,9 +292,10 @@ function MakeTrip(props){
           color="primary"
           onClick={async ()=> {
             console.log('clicked the save button')
-            console.log(destination)
-            console.log(activites)
-            console.log(selectedDate)
+            console.log("Destination: "+ destination)
+            console.log("Activities: "+ activites)
+            console.log("Start Date: "+ selectedStartDate)
+            console.log("End Date: "+ selectedEndDate)
             props.closeTrip()
           }}
         >
@@ -289,52 +327,49 @@ function LoginButton(props){
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  var provider = new firebase.auth.GoogleAuthProvider();
-
   const [signupErrorValue, setSignupErrorValue] = useState('')
   console.log(signupErrorValue)
+
   const [signupError, setSignupError] = useState(false)
   console.log(signupError)
 
   // Sign up and make user on firebase with email and password
   function signUp(){
-    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-      console.log(error)
+    console.log("SIGNUP")
+    firebase.auth().createUserWithEmailAndPassword(email, password).then(function(result) {
       setGlobal({
         state: false,
       });
-      if(error){ // if there is an error
-        setSignupErrorValue(error.message)
-        setSignupError(true)
-      } else { // if there is no error
-        setDialogOpen(false) // close dialog
-        setSignupErrorValue('')
-        setSignupError(false)
-      }
-
-      // if (error){
-      //   // console.log(typeof(error.message)) // string
-      //   // console.log(error.message) // correct error message
-      //   console.log('yes there is an error.')
-      //   setSignupErrorValue(error.message)
-      //   setSignupError(true)
-      //   //console.log('setting error message for signup')
-      // }
-
-    });    
+      setDialogOpen(false) // close dialog
+      setSignupErrorValue('')
+      setSignupError(false)
+      console.log("in the error-free branch")
+    }).catch(function(error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log("error: " + error)
+      setSignupErrorValue(error.message)
+      setSignupError(true)
+    })
   }
 
   // Login with email and password
   function loginEmail(){
-    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
-      // Handle Errors here.
+    firebase.auth().signInWithEmailAndPassword(email, password).then(function(result) {
       setGlobal({
         state: false,
       });
+      setDialogOpen(false) // close dialog
+      setSignupErrorValue('')
+      setSignupError(false)
+      console.log("in the error-free branch")
+    }).catch(function(error) {
+      // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
-      console.log(error)
-      // ...
+      console.log("error: " + error)
+      setSignupErrorValue(error.message)
+      setSignupError(true)
     });
   }
 
@@ -374,115 +409,105 @@ function LoginButton(props){
     </Button>
     <Dialog 
       open={dialogOpen}
-      onClose={() => setDialogOpen(false)}
-      className="hello">
-      <DialogTitle>
-        <div>
-          <div className='loginPopupLogo'>
-            <img className = 'logoPic' src="/Photos/logooutlined.png" alt="PairUp Logo"/>
-          </div>
-          <div className='email-login'>
-            <Grid container spacing={1} alignItems="flex-end">
-              <Grid item>
-                <EmailIcon />
-              </Grid>
-              <Grid item>
-                <TextField 
-                  id="input-with-icon-grid" 
-                  label="Email" 
-                  placeholder="Email" 
-                  type="email" 
-                  value={email} 
-                  onChange={e=> setEmail(e.target.value)}
-                />
-              </Grid>
-            </Grid>        
-          </div>
-          
-          <div className='password-login'>
-            <Grid container spacing={1} alignItems="flex-end">
-              <Grid item>
-                <LockOpenIcon />
-              </Grid>
-              <Grid item>
-                <TextField 
-                  id="input-with-icon-grid" 
-                  label="Password" 
-                  placeholder="Password" 
-                  type="password" 
-                  value={password}
-                  onChange={e=> setPassword(e.target.value)}
-                />
-              </Grid>
+      onClose={() => {
+        console.log("CLOSE 2")
+        setDialogOpen(false)
+      }}
+      aria-labelledby="simple-dialog-title">
+      <DialogTitle id="simple-dialog-title">
+        <div className='loginPopupLogo'>
+          <img className = 'logoPic' src="/Photos/logo.png" alt="PairUp Logo"/>
+        </div>
+        <div className='email-login'>
+          <Grid container spacing={1} alignItems="flex-end">
+            <Grid item>
+              <EmailIcon />
             </Grid>
-          </div>
-          
-          {signupError && <div>{signupErrorValue}</div>}
-          <div className='loginSignupButton'>
-            <Button 
-              variant="contained" 
-              color="primary"
-              size="large"
-              style={{backgroundColor: "#f5365c", marginRight:".75rem"}}
-              onClick={async ()=> {
-                if(email && password) 
-                  console.log(email)
-                  console.log(password)
-                  setEmail('')
-                  setPassword('')
-                  console.log("calling signup")
-                  signUp()
-                  // if (signupError){ // if there is an error
-                  //   setDialogOpen(true)
-                  // } else{ // if there is not an error
-                  //   setSignupError(false)
-                  //   setDialogOpen(false)
-                  // }
-              }}
-            >
-              Sign Up
-            </Button>
+            <Grid item>
+              <TextField 
+                id="input-with-icon-grid" 
+                label="Email" 
+                placeholder="Email" 
+                type="email" 
+                value={email} 
+                onChange={e=> setEmail(e.target.value)}
+              />
+            </Grid>
+          </Grid>        
+        </div>
+        
+        <div className='password-login'>
+           <Grid container spacing={1} alignItems="flex-end">
+            <Grid item>
+              <LockOpenIcon />
+            </Grid>
+            <Grid item>
+              <TextField 
+                id="input-with-icon-grid" 
+                label="Password" 
+                placeholder="Password" 
+                type="password" 
+                value={password}
+                onChange={e=> setPassword(e.target.value)}
+              />
+            </Grid>
+          </Grid>
+        </div>
+        
+        {signupError && <div className='orGoogle'>{signupErrorValue}</div>}
+        <div className='loginSignupButton'>
+          <Button 
+            variant="contained" 
+            color="primary"
+            onClick={async ()=> {
+              if(email && password) 
+                console.log(email)
+                console.log(password)
+                setEmail('')
+                setPassword('')
+                console.log("calling signup")
+                signUp()
+            }}
+          >
+            Sign Up
+          </Button>
 
-            <Button 
-              variant="contained" 
-              color="primary"
-              style={{backgroundColor: "#f5365c", marginLeft:".75rem"}}
-              size="large"
-              onClick={async ()=> {
-                if(email && password) 
-                  console.log(email)
-                  console.log(password)
-                  setEmail('')
-                  setPassword('')
-                  setDialogOpen(false)
-                  loginEmail() 
-              }}
-            >
-              Login
-            </Button>
-          </div>
+          <Button 
+            variant="contained" 
+            color="primary"
+            onClick={async ()=> {
+              if(email && password) 
+                console.log(email)
+                console.log(password)
+                setEmail('')
+                setPassword('')
+                //setDialogOpen(false)
+                loginEmail() 
+            }}
+          >
+            Login
+          </Button>
+        </div>
 
-          <div className='orGoogle'>or login with</div>
+        <div className='orGoogle'>or login with</div>
 
-          <div className='googleButton'>
-            <Button 
-              variant="contained" 
-              color="primary"
-              size="large"
-              style={{backgroundColor: "#ff9800"}}
-              onClick={async ()=> {
-                if(email && password) 
-                  console.log(email)
-                  console.log(password)
-                  setEmail('')
-                  setPassword('')
-                  setDialogOpen(false)
-                  googleLogin() 
-              }}
-            >
-              Google
-            </Button>
-          </div>
+        <div className='googleButton'>
+          <Button 
+            variant="contained" 
+            color="primary"
+            style={{backgroundColor: "#DB4437", outlineColor:"#DB4437"}}
+            onClick={async ()=> {
+              if(email && password) 
+                console.log(email)
+                console.log(password)
+                setEmail('')
+                setPassword('')
+                setDialogOpen(false)
+                googleLogin() 
+            }}
+          >
+            Google
+          </Button>
         </div>
       </DialogTitle>
     </Dialog>
@@ -548,34 +573,7 @@ function TaskBar(props){
     <ExitToAppIcon/>
   </Button>
     
-    {/* <Button 
-        className="btn-icon btn-2" 
-        color='info' 
-        type="button"
-        onClick={()=> {
-          console.log('clicked + button to add plan')
-          props.openTrip()
-        }}
-      >
-          <span className="btn-inner--icon">
-            <AddCircleOutlineIcon/>
-          </span>
-      </Button>
-
-   
-      <Button 
-        className="btn-icon btn-2 logout" 
-        color='info' 
-        type="button"
-        onClick={()=> {
-          console.log('clicked logout')
-          logout()
-        }}
-      >
-          <span className="btn-inner--icon">
-            <ExitToAppIcon/>
-          </span>
-      </Button> */}
+       
   </div>
 }
 
@@ -637,48 +635,7 @@ function SearchBar(props){
       <SearchIcon /> 
     </Button>
 
-    {/* <FormGroup>
-      <InputGroup className="mb-4">
-        <Input 
-          placeholder="Search" 
-          type="text" 
-          value={text} 
-          onChange={e=> setText(e.target.value)}
-          onKeyPress={async e=> {
-            if(e.key ==='Enter') {
-              searchTerm = text
-              searchedPlans = await queryPlans(searchTerm)
-              if (searchedPlans.length === 0) {
-                setMessage(true)
-              } else {
-                setMessage(false)
-              }
-              setPlans(searchedPlans)
-              setText('')
-            }
-          }}
-        />
-
-        <InputGroupAddon addonType="append">
-          <InputGroupText style={{backgroundColor: "#f5365c"}}
-            onClick={async ()=> {
-              if(text) 
-                searchTerm = text
-                searchedPlans = await queryPlans(searchTerm)
-                if (searchedPlans.length === 0) {
-                  setMessage(true)
-                } else {
-                  setMessage(false)
-                }
-                setPlans(searchedPlans)
-                setText('')
-              }}
-          >
-            <i className="ni ni-zoom-split-in" style={{color: "white"}}/>
-          </InputGroupText>
-        </InputGroupAddon>
-      </InputGroup>
-    </FormGroup> */}
+  
     </div>
     {!(message) && searchedPlans && searchedPlans.length && <TripPlans searchedPlans={searchedPlans} />}
     {message && <NoTrips />}
@@ -783,40 +740,7 @@ async function GetPhoto(tag) {
     
     {showDetails && <Dialog />}
 
-    {/* <Dialog>
-      <Card className={classes.root}>
-        <CardActionArea>
-          <CardMedia
-            className={classes.media}
-            image={props.plan.Photo}
-            title= "photo of location"
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              {props.plan.City}, {props.plan.Country}
-            </Typography>
-            <Typography gutterBottom variant="subtitle2">
-              {Date(props.plan.startDate)} - {Date(props.plan.endDate)}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              <span className="key">Trip Owner: </span><span>{props.plan.Name}</span>
-              <span className="key">Preferred Contact: </span><span className="lowercase">{props.plan.PreferredContact}</span>
-              <span className="key">Planned Activities: </span><span>{Activities(props.plan.PlannedActivities)}</span>
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-        <CardActions>
-          <Button 
-            size="small" 
-            color="primary"
-            onClick={() => setShowDetails(false)}
-            >
-            Close
-          </Button>
-        </CardActions>
-      </Card> */}
-    {/* </Dialog> */}
-
+  
     <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open} className="trip-details">
         <CardMedia
             className={classes.media}
