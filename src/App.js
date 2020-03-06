@@ -126,7 +126,7 @@ function App() {
 
 
 
-async function MakeTrip(props){
+function MakeTrip(props){
   const [citySearchTerm, setCitySearchTerm] = useState('')
   const [city, setCity] = useState('')
 
@@ -359,23 +359,23 @@ async function MakeTrip(props){
               console.log(test)
             } // else if (!city && country) {GetPhoto({country})}
 
-            props.closeTrip()
-            let travelPlans = db.collection("travelplans");
-            let user = firebase.auth().currentUser
-            let url = GetPhoto(city)
-            console.log("hopefully: " + url)
-            travelPlans.add({
-                City: city,
-                Country: country,
-                Name: "nothing yet",
-                PreferredContact: "nothing yet",
-                Photo: url,
-                PlannedActivities: activites,
-                StartDate: selectedStartDate,
-                EndDate: selectedEndDate,
-                UserID: user.uid,
-                Search: [city, country, "nothing yet", "nothing yet", activites, selectedStartDate, selectedEndDate]
-            })
+            // props.closeTrip()
+            // let travelPlans = db.collection("travelplans");
+            // let user = firebase.auth().currentUser
+            // let url = GetPhoto(city)
+            // console.log("hopefully: " + url)
+            // travelPlans.add({
+            //     City: city,
+            //     Country: country,
+            //     Name: "nothing yet",
+            //     PreferredContact: "nothing yet",
+            //     Photo: url,
+            //     PlannedActivities: activites,
+            //     StartDate: selectedStartDate,
+            //     EndDate: selectedEndDate,
+            //     UserID: user.uid,
+            //     Search: [city, country, "nothing yet", "nothing yet", activites, selectedStartDate, selectedEndDate]
+            // })
           }}
         >
           Save 
