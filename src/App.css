@@ -88,6 +88,10 @@ html,body,#root{
   flex-wrap: wrap;
 }
 
+.makeTrip {
+  text-transform: capitalize;
+}
+
 #card {
   width: 25rem;
   margin-top: 1.5rem;
