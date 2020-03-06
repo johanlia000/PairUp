@@ -103,7 +103,7 @@ const DialogActions = withStyles(theme => ({
   },
 }))(MuiDialogActions);
 setGlobal({
-  state: true
+  state: false
 })
 
 
@@ -117,14 +117,10 @@ function App() {
     firebase.auth().onAuthStateChanged(function(user) {
       console.log(user)
       if (user) {
-        
           setUser(user)
-        
       } else {
         // No user is signed in.
-       
           setUser(null)
-      
       }
     });
   }, [])
@@ -150,16 +146,29 @@ function MakeTrip(props){
   const [activites, addActivity] = useState([])
   const [activity, setActivity] = useState('')
 
-  const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
-  const handleDateChange = date => {
-    console.log("first" + date)
-    setSelectedDate(date);
-    console.log(selectedDate)
-  };  
+  //const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
+  const [selectedStartDate, setSelectedStartDate] = React.useState(null);
+  console.log("selected start date: " + selectedStartDate)
+  console.log(typeof(selectedStartDate)) // object
+
+  const [selectedEndDate, setSelectedEndDate] = React.useState(null);
+  console.log("selected end date: " + selectedEndDate)
+  console.log(typeof(selectedEndDate)) // object
+  console.log("test" + selectedEndDate)
+
+  const handleDateChangeStart = date => {
+    console.log("Calling handleDateChange - Start date")
+    setSelectedStartDate(date);
+  }; 
+  
+  const handleDateChangeEnd = date => {
+    console.log("Calling handleDateChange - End date")
+    setSelectedEndDate(date);
+  }; 
 
   return <div className='makeTrip'>
     <div className='userTripInputs'>
-      <div className='destinationChosen'><b>Destination: </b> {destinationSearchTerm}</div>
+      <div className='destinationChosen'><b>Destination: </b> {destination}</div>
       <div className='dateChosen'><b>Date: </b>  </div>
       <div className='activitiesChosen'><b>Activities: </b> 
         {activites.map((item, index)=>
@@ -172,25 +181,43 @@ function MakeTrip(props){
     </div>
 
     <div className='setDate'>
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDatePicker
-            disableToolbar
-            variant="inline"
-            format="MM/dd/yyyy"
-            margin="normal"
-            id="date-picker-dialog"
-            label="Start Date"
-            value={selectedDate}
-            onChange={
-              handleDateChange
-            }
-            
-            KeyboardButtonProps={{
-              'aria-label': 'change date',
-            }}
-          />
-      </MuiPickersUtilsProvider>
-        
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <KeyboardDatePicker
+              disableToolbar
+              variant="inline"
+              format="MM/dd/yyyy"
+              margin="normal"
+              id="date-picker-dialog"
+              label="Start Date"
+              value={selectedStartDate}
+              onChange={
+                handleDateChangeStart
+              }
+              
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
+        </MuiPickersUtilsProvider>
+    </div>
+    <div className='setDate'>
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <KeyboardDatePicker
+          disableToolbar
+          variant="inline"
+          format="MM/dd/yyyy"
+          margin="normal"
+          id="date-picker-dialog"
+          label="End Date"
+          value={selectedEndDate}
+          onChange={
+            handleDateChangeEnd
+          }
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
+        />
+        </MuiPickersUtilsProvider>
     </div>
 
 
@@ -198,31 +225,31 @@ function MakeTrip(props){
       <TextField  fullWidth
         label="Enter Destination" 
         variant="outlined" 
-        value={destination} 
-        onChange={e=> setDestination(e.target.value)}
+        value={destinationSearchTerm} 
+        onChange={e=> setDestinationSearchTerm(e.target.value)}
             onKeyPress={async e=> {
-              if(e.key ==='Enter' && destination != 0) {
-                console.log("pressed enter " + destination)
-                setDestination('')
-                setDestinationSearchTerm(destination)
+              if(e.key ==='Enter' && destinationSearchTerm != 0) {
+                console.log("pressed enter " + destinationSearchTerm)
+                setDestination(destinationSearchTerm)
+                setDestinationSearchTerm('')
               }
             }}
       />
-
       <Button 
         id='search-button'
         variant="contained" 
         color="primary"
         onClick={async ()=> {
-          if(destination != 0) 
-            console.log('clicked the button: ' + destination)
-            setDestination('')
-            setDestinationSearchTerm(destination)
+          if(destinationSearchTerm != 0) 
+            console.log('clicked the button: ' + destinationSearchTerm)
+            setDestination(destinationSearchTerm)
+            setDestinationSearchTerm('')
           }}
       >
         <SearchIcon /> 
       </Button>
     </div>
+
 
     <div className='searchActivities'>
       <TextField  fullWidth
@@ -265,9 +292,10 @@ function MakeTrip(props){
           color="primary"
           onClick={async ()=> {
             console.log('clicked the save button')
-            console.log(destination)
-            console.log(activites)
-            console.log(selectedDate)
+            console.log("Destination: "+ destination)
+            console.log("Activities: "+ activites)
+            console.log("Start Date: "+ selectedStartDate)
+            console.log("End Date: "+ selectedEndDate)
             props.closeTrip()
           }}
         >
@@ -310,14 +338,14 @@ function LoginButton(props){
     console.log("SIGNUP")
     firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
       console.log(error)
-      // setGlobal({
-      //   state: false,
-      // });
       if(error){ // if there is an error
         console.log('going into the if error')
         setSignupErrorValue(error.message)
         setSignupError(true)
       } else { // if there is no error
+        setGlobal({
+          state: false,
+        });
         setDialogOpen(false) // close dialog
         setSignupErrorValue('')
         setSignupError(false)
@@ -330,20 +358,22 @@ function LoginButton(props){
   function loginEmail(){
     firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
       // Handle Errors here.
-      // setGlobal({
-      //   state: false,
-      // });
       var errorCode = error.code;
       var errorMessage = error.message;
-      console.log(error)
+      console.log("error: " + error)
       if(error){ // if there is an error
         console.log('going into the if error')
         setSignupErrorValue(error.message)
         setSignupError(true)
       } else { // if there is no error
+        setGlobal({
+          state: false,
+        });
         setDialogOpen(false) // close dialog
         setSignupErrorValue('')
         setSignupError(false)
+        console.log("in the no error else")
+        
       }
     });
   }
