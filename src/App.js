@@ -134,6 +134,7 @@ function MakeTrip(props){
 
   // this is for setting if the user did not input a city or country
   const [errorCityCountry, seterrorCityCountry] = useState(false)
+  console.log("error city country" + errorCityCountry)
 
   const [activites, addActivity] = useState([])
   const [activity, setActivity] = useState('')
@@ -150,6 +151,34 @@ function MakeTrip(props){
   const handleDateChangeEnd = date => {
     setSelectedEndDate(date);
   }; 
+
+  async function firebaseMakeTravelPlan(){
+    console.log('inside firebase make travel plan function')
+    var url = await GetPhoto(JSON.stringify({city}))
+    props.closeTrip()
+    let travelPlans = db.collection("travelplans").doc()
+    let user = firebase.auth().currentUser
+    travelPlans.set({
+        City: city.toLowerCase(),
+        Country: country.toLowerCase(),
+        Name: "nothing yet",
+        PreferredContact: "nothing yet",
+        Photo: url,
+        StartDate: selectedStartDate,
+        EndDate: selectedEndDate,
+        UserID: user.uid,
+        Search: [city.toLowerCase(), country.toLowerCase(), "nothing yet", "nothing yet", selectedStartDate, selectedEndDate]
+    })
+    for (let i = 0; i < activites.length; i ++) {
+      travelPlans.update({
+          PlannedActivities: firebase.firestore.FieldValue.arrayUnion(activites[i].toLowerCase())
+      });
+      travelPlans.update({
+        Search: firebase.firestore.FieldValue.arrayUnion(activites[i].toLowerCase())
+      });
+    }
+    console.log('end of firebase make travel plan')
+  }
 
   async function GetPhoto(tag) {
     let tag2 = tag.split(":")
@@ -348,7 +377,7 @@ function MakeTrip(props){
           <SearchIcon /> 
         </Button>
     </div>
-
+    {errorCityCountry && <div className='cityCountryError'>Please enter a city and/or country!</div>}
     <div className='saveButtonTrips'>
       <Button 
           style={{backgroundColor: "#f5365c"}}
@@ -359,42 +388,25 @@ function MakeTrip(props){
           onClick={async ()=> {
             console.log('Clicked the save button')
             console.log("City: "+ city)
+            console.log(city.length)
             console.log("Country: "+ country)
+            console.log(country.length)
             console.log("Activities: "+ activites)
-            console.log("type activies: " + typeof(activites))
             console.log("Start Date: "+ selectedStartDate) // this is an object
             console.log("End Date: "+ selectedEndDate) // this is an object
-            if(city){
-              var url = await GetPhoto(JSON.stringify({city}))
-            } else if (!city && country) {
-              var url = await GetPhoto({country})
-            } else if (!city && !country) {
-              // throw an error
-              // noCityCountryError(true)
+            if(city.length > 0){ // this works
+              console.log("city > 0")
+              seterrorCityCountry(false)
+              firebaseMakeTravelPlan()
+            } else if (city.length <= 0 && country.length > 0) { // this works
+              console.log("country no city")
+              firebaseMakeTravelPlan()
+              seterrorCityCountry(false)
+            } else if (city.length <=0 && country.length <= 0) {
+              console.log('no city no country')
+              // throw an error because they didnt put either
+              seterrorCityCountry(true)
             }
-            props.closeTrip()
-            let travelPlans = db.collection("travelplans").doc()
-            let user = firebase.auth().currentUser
-            travelPlans.set({
-                City: city.toLowerCase(),
-                Country: country.toLowerCase(),
-                Name: "nothing yet",
-                PreferredContact: "nothing yet",
-                Photo: url,
-                StartDate: selectedStartDate,
-                EndDate: selectedEndDate,
-                UserID: user.uid,
-                Search: [city.toLowerCase(), country.toLowerCase(), "nothing yet", "nothing yet", selectedStartDate, selectedEndDate]
-            })
-            for (let i = 0; i < activites.length; i ++) {
-              travelPlans.update({
-                  PlannedActivities: firebase.firestore.FieldValue.arrayUnion(activites[i].toLowerCase())
-              });
-              travelPlans.update({
-                Search: firebase.firestore.FieldValue.arrayUnion(activites[i].toLowerCase())
-              });
-            }
-
           }}
         >
           Save 
@@ -797,7 +809,8 @@ function SearchBar(props){
             {props.plan.City}, {props.plan.Country}
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
-            {moment(props.plan.startDate).format('MMMM Do YYYY')} - {moment(props.plan.endDate).format('MMMM Do YYYY')}
+            {props.plan.startDate} - {props.plan.endDate}
+            {/* {moment(props.plan.startDate).format('MMMM Do YYYY')} - {moment(props.plan.endDate).format('MMMM Do YYYY')} */}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -815,6 +828,7 @@ function SearchBar(props){
         <DialogContent dividers className="title-case">
             <Typography gutterBottom variant="h5" component="h2">
               {props.plan.City}, {props.plan.Country}
+              {/* {moment(props.plan.startDate).format('MMMM Do YYYY')} - {moment(props.plan.endDate).format('MMMM Do YYYY')} */}
             </Typography>
             <Typography gutterBottom variant="subtitle2">
               {moment(props.plan.startDate).format('MMMM Do YYYY')} - {moment(props.plan.endDate).format('MMMM Do YYYY')}

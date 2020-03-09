@@ -303,3 +303,13 @@ html,body,#root{
 .MuiDialogTitle-root {
   padding: 2rem !important;
 }
+
+.cityCountryError{
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  padding-top: 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  color: red;
+}
