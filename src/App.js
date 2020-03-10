@@ -786,6 +786,10 @@ function SearchBar(props){
   };
   const [showDetails, setShowDetails] = useState(false)
   const classes = useStyles();
+  console.log(props.plan)
+
+  var startDate = props.plan.StartDate.seconds * 1000
+  var endDate = props.plan.EndDate.seconds * 1000
 
   return <div>
     <Card 
@@ -809,7 +813,8 @@ function SearchBar(props){
             {props.plan.City}, {props.plan.Country}
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
-            {(moment(props.plan.startDate).format('MMMM Do YYYY'))} - {(moment(props.plan.endDate).format('MMMM Do YYYY'))}
+            {props.plan.StartDate.seconds && moment(startDate).format('MMMM Do YYYY')} {<span> - </span>} {props.plan.StartDate.seconds && moment(endDate).format('MMMM Do YYYY')}
+            {!props.plan.StartDate.seconds && <span>No date</span>} - {!props.plan.StartDate.seconds && <span>No date</span>}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -827,10 +832,10 @@ function SearchBar(props){
         <DialogContent dividers className="title-case">
             <Typography gutterBottom variant="h5" component="h2">
               {props.plan.City}, {props.plan.Country}
-              {/* {moment(props.plan.startDate).format('MMMM Do YYYY')} - {moment(props.plan.endDate).format('MMMM Do YYYY')} */}
+              
             </Typography>
             <Typography gutterBottom variant="subtitle2">
-              {moment(props.plan.startDate).format('MMMM Do YYYY')} - {moment(props.plan.endDate).format('MMMM Do YYYY')}
+               {moment(startDate).format('MMMM Do YYYY')} - {moment(endDate).format('MMMM Do YYYY')}
             </Typography>
             <Typography variant="body2">
               <span className="key">Trip Owner: </span><span>{props.plan.Name}</span>
