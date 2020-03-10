@@ -788,8 +788,7 @@ function SearchBar(props){
   const classes = useStyles();
   console.log(props.plan)
 
-  var startDate = props.plan.StartDate.seconds * 1000
-  var endDate = props.plan.EndDate.seconds * 1000
+  
 
   return <div>
     <Card 
@@ -813,8 +812,22 @@ function SearchBar(props){
             {props.plan.City}, {props.plan.Country}
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
-            {props.plan.StartDate.seconds && moment(startDate).format('MMMM Do YYYY')} {<span> - </span>} {props.plan.StartDate.seconds && moment(endDate).format('MMMM Do YYYY')}
-            {!props.plan.StartDate.seconds && <span>No date</span>} - {!props.plan.StartDate.seconds && <span>No date</span>}
+            {/* Neither start date nor end date */}
+            {!props.plan.StartDate && !props.plan.EndDate && <span>No preffered dates</span>} 
+
+            {/* both start date and end date */}
+            {props.plan.StartDate && props.plan.EndDate && moment(props.plan.StartDate.seconds * 1000).format('MMMM Do YYYY')} 
+            {props.plan.StartDate && props.plan.EndDate && <span> - </span>} 
+            {props.plan.StartDate && props.plan.EndDate && moment(props.plan.EndDate.seconds * 1000).format('MMMM Do YYYY')}
+
+            {/* Only have start date */}
+            {props.plan.StartDate && !props.plan.EndDate && <span>Start date: </span>} 
+            {props.plan.StartDate && !props.plan.EndDate && moment(props.plan.StartDate.seconds * 1000).format('MMMM Do YYYY')}
+
+            {/* Only have end date */}
+            {!props.plan.StartDate && props.plan.EndDate && <span>End date: </span>} 
+            {!props.plan.StartDate && props.plan.EndDate && moment(props.plan.EndDate.seconds * 1000).format('MMMM Do YYYY')}
+
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -835,7 +848,21 @@ function SearchBar(props){
               
             </Typography>
             <Typography gutterBottom variant="subtitle2">
-               {moment(startDate).format('MMMM Do YYYY')} - {moment(endDate).format('MMMM Do YYYY')}
+              {/* Neither start date nor end date */}
+              {!props.plan.StartDate && !props.plan.EndDate && <span>No preffered dates</span>} 
+
+              {/* both start date and end date */}
+              {props.plan.StartDate && props.plan.EndDate && moment(props.plan.StartDate.seconds * 1000).format('MMMM Do YYYY')} 
+              {props.plan.StartDate && props.plan.EndDate && <span> - </span>} 
+              {props.plan.StartDate && props.plan.EndDate && moment(props.plan.EndDate.seconds * 1000).format('MMMM Do YYYY')}
+
+              {/* Only have start date */}
+              {props.plan.StartDate && !props.plan.EndDate && <span>Start date: </span>} 
+              {props.plan.StartDate && !props.plan.EndDate && moment(props.plan.StartDate.seconds * 1000).format('MMMM Do YYYY')}
+
+              {/* Only have end date */}
+              {!props.plan.StartDate && props.plan.EndDate && <span>End date: </span>} 
+              {!props.plan.StartDate && props.plan.EndDate && moment(props.plan.EndDate.seconds * 1000).format('MMMM Do YYYY')}
             </Typography>
             <Typography variant="body2">
               <span className="key">Trip Owner: </span><span>{props.plan.Name}</span>
