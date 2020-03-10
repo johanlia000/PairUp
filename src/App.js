@@ -160,14 +160,14 @@ function MakeTrip(props){
     let user = firebase.auth().currentUser
     travelPlans.set({
         City: city.toLowerCase(),
+        Search: [city.toLowerCase(), country.toLowerCase(), selectedStartDate, selectedEndDate],
         Country: country.toLowerCase(),
-        Name: "nothing yet",
-        PreferredContact: "nothing yet",
+        //Name: "nothing yet",
+        //PreferredContact: "nothing yet",
         Photo: url,
         StartDate: selectedStartDate,
         EndDate: selectedEndDate,
-        UserID: user.uid,
-        Search: [city.toLowerCase(), country.toLowerCase(), "nothing yet", "nothing yet", selectedStartDate, selectedEndDate]
+        UserID: user.uid
     })
     for (let i = 0; i < activites.length; i ++) {
       travelPlans.update({
@@ -809,8 +809,7 @@ function SearchBar(props){
             {props.plan.City}, {props.plan.Country}
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
-            {props.plan.startDate} - {props.plan.endDate}
-            {/* {moment(props.plan.startDate).format('MMMM Do YYYY')} - {moment(props.plan.endDate).format('MMMM Do YYYY')} */}
+            {(moment(props.plan.startDate).format('MMMM Do YYYY'))} - {(moment(props.plan.endDate).format('MMMM Do YYYY'))}
           </Typography>
         </CardContent>
       </CardActionArea>
