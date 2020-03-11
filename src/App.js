@@ -142,6 +142,12 @@ function MakeTrip(props){
   const [selectedStartDate, setSelectedStartDate] = React.useState(null);
 
   const [selectedEndDate, setSelectedEndDate] = React.useState(null);
+
+  const [name, setName] = useState('')
+  const [nameSearch, setNameSearch] = useState('')
+
+  const [contact, setContact] = useState('')
+  const [contactSearch, setContactSearch] = useState('')
   
 
   const handleDateChangeStart = date => {
@@ -162,8 +168,8 @@ function MakeTrip(props){
         City: city.toLowerCase(),
         Search: [city.toLowerCase(), country.toLowerCase(), selectedStartDate, selectedEndDate],
         Country: country.toLowerCase(),
-        //Name: "nothing yet",
-        //PreferredContact: "nothing yet",
+        Name: name.toLowerCase(),
+        PreferredContact: contact.toLowerCase(),
         Photo: url,
         StartDate: selectedStartDate,
         EndDate: selectedEndDate,
@@ -240,6 +246,7 @@ function MakeTrip(props){
         </span>
         )}
       </div>
+      <div className='dateChosen'><b>Name:  </b>{name} </div>
     </div>
 
     <div className='setDate'>
@@ -378,6 +385,67 @@ function MakeTrip(props){
           <SearchIcon /> 
         </Button>
     </div>
+
+    <div className='searchDestination'>
+      <TextField  fullWidth
+        label="Enter Name" 
+        variant="outlined" 
+        color="secondary"
+        value={nameSearch} 
+        onChange={e=> setNameSearch(e.target.value)}
+            onKeyPress={async e=> {
+              if(e.key ==='Enter' && nameSearch.length != 0) {
+                console.log("pressed enter " + nameSearch)
+                setName(nameSearch)
+                setNameSearch('')
+              }
+            }}
+      />
+      <Button 
+        id='search-button'
+        variant="outlined" 
+        color="secondary"
+        onClick={async ()=> {
+          if(nameSearch.length > 0) 
+            console.log('clicked the button: ' + nameSearch)
+            setName(nameSearch)
+            setNameSearch('')
+          }}
+      >
+        <SearchIcon /> 
+      </Button>
+    </div>
+
+    <div className='searchDestination'>
+      <TextField  fullWidth
+        label="Enter Preferred Contact" 
+        variant="outlined" 
+        color="secondary"
+        value={contactSearch} 
+        onChange={e=> setContactSearch(e.target.value)}
+            onKeyPress={async e=> {
+              if(e.key ==='Enter' && contactSearch.length != 0) {
+                console.log("pressed enter " + contactSearch)
+                setContact(contactSearch)
+                setContactSearch('')
+              }
+            }}
+      />
+      <Button 
+        id='search-button'
+        variant="outlined" 
+        color="secondary"
+        onClick={async ()=> {
+          if(contactSearch.length > 0) 
+            console.log('clicked the button: ' + contactSearch)
+            setContact(contactSearch)
+            setContactSearch('')
+          }}
+      >
+        <SearchIcon /> 
+      </Button>
+    </div>
+
     {errorCityCountry && <div className='cityCountryError'>Please enter a city and/or country!</div>}
     <div className='saveButtonTrips'>
       <Button 

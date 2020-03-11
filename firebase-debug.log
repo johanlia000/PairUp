@@ -1,0 +1,101 @@
+[debug] [2020-03-10T23:00:49.033Z] ----------------------------------------------------------------------
+[debug] [2020-03-10T23:00:49.034Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy
+[debug] [2020-03-10T23:00:49.034Z] CLI Version:   7.14.0
+[debug] [2020-03-10T23:00:49.034Z] Platform:      darwin
+[debug] [2020-03-10T23:00:49.034Z] Node Version:  v12.14.1
+[debug] [2020-03-10T23:00:49.035Z] Time:          Tue Mar 10 2020 16:00:49 GMT-0700 (Pacific Daylight Time)
+[debug] [2020-03-10T23:00:49.035Z] ----------------------------------------------------------------------
+[debug] [2020-03-10T23:00:49.035Z] 
+[debug] [2020-03-10T23:00:49.043Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-03-10T23:00:49.043Z] > authorizing via signed-in user
+[debug] [2020-03-10T23:00:49.044Z] [iam] checking project pairuptravel for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasedatabase.instances.update","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
+[debug] [2020-03-10T23:00:49.045Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/pairuptravel:testIamPermissions  
+
+[debug] [2020-03-10T23:00:49.126Z] <<< HTTP RESPONSE 200
+[debug] [2020-03-10T23:00:49.127Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/pairuptravel  
+ 
+[debug] [2020-03-10T23:00:49.237Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'pairuptravel'...
+[info] 
+[info] i  deploying database, storage, firestore, functions, hosting
+[info] i  database: checking rules syntax...
+[debug] [2020-03-10T23:00:50.112Z] >>> HTTP REQUEST PUT https://pairuptravel.firebaseio.com/.settings/rules.json?dryRun=true  
+ {
+  /* Visit https://firebase.google.com/docs/database/security to learn more about security rules. */
+  "rules": {
+    ".read": false,
+    ".write": false
+  }
+}
+[debug] [2020-03-10T23:00:51.088Z] <<< HTTP RESPONSE 200
+[info] ✔  database: rules syntax for database pairuptravel is valid
+[debug] [2020-03-10T23:00:51.090Z] >>> HTTP REQUEST GET https://appengine.googleapis.com/v1/apps/pairuptravel  
+ 
+[debug] [2020-03-10T23:00:51.806Z] <<< HTTP RESPONSE 200
+[info] i  firebase.storage: checking storage.rules for compilation errors...
+[debug] [2020-03-10T23:00:51.810Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/pairuptravel:test  
+
+[debug] [2020-03-10T23:00:52.215Z] <<< HTTP RESPONSE 200
+[warn] ⚠  [W] undefined:undefined - Ruleset uses old version (version [1]). Please update to the latest version (version [2]).
+[info] ✔  firebase.storage: rules file storage.rules compiled successfully
+[info] i  firestore: reading indexes from firestore.indexes.json...
+[info] i  cloud.firestore: checking firestore.rules for compilation errors...
+[debug] [2020-03-10T23:00:52.220Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/pairuptravel:test  
+
+[debug] [2020-03-10T23:00:52.624Z] <<< HTTP RESPONSE 200
+[info] ✔  cloud.firestore: rules file firestore.rules compiled successfully
+[debug] [2020-03-10T23:00:52.626Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "lint": "eslint .",
+    "serve": "firebase serve --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "8"
+  },
+  "dependencies": {
+    "firebase-admin": "^8.6.0",
+    "firebase-functions": "^3.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.12.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "firebase-functions-test": "^0.1.6"
+  },
+  "private": true
+}
+[info] i  functions: ensuring necessary APIs are enabled...
+[debug] [2020-03-10T23:00:52.628Z] >>> HTTP REQUEST GET https://serviceusage.googleapis.com/v1/projects/pairuptravel/services/cloudfunctions.googleapis.com  
+ 
+[debug] [2020-03-10T23:00:52.628Z] >>> HTTP REQUEST GET https://serviceusage.googleapis.com/v1/projects/pairuptravel/services/runtimeconfig.googleapis.com  
+ 
+[debug] [2020-03-10T23:00:53.136Z] <<< HTTP RESPONSE 200
+[debug] [2020-03-10T23:00:53.143Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: all necessary APIs are enabled
+[debug] [2020-03-10T23:00:53.144Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/pairuptravel/adminSdkConfig  
+ 
+[debug] [2020-03-10T23:00:53.243Z] <<< HTTP RESPONSE 200
+[debug] [2020-03-10T23:00:53.244Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/pairuptravel/versions  
+
+[debug] [2020-03-10T23:00:53.913Z] <<< HTTP RESPONSE 200
+[debug] [2020-03-10T23:00:53.916Z] >>> HTTP REQUEST GET https://firebaserules.googleapis.com/v1/projects/pairuptravel/releases?pageSize=10&pageToken=  
+ 
+[debug] [2020-03-10T23:00:54.262Z] <<< HTTP RESPONSE 200
+[debug] [2020-03-10T23:00:54.264Z] >>> HTTP REQUEST GET https://firebaserules.googleapis.com/v1/projects/pairuptravel/rulesets/8d83fd8b-3c39-4966-a146-b7c84b3aaa3e  
+ 
+[debug] [2020-03-10T23:00:54.570Z] <<< HTTP RESPONSE 200
+[info] i  storage: latest version of storage.rules already up to date, skipping upload...
+[debug] [2020-03-10T23:00:54.572Z] >>> HTTP REQUEST GET https://firebaserules.googleapis.com/v1/projects/pairuptravel/releases?pageSize=10&pageToken=  
+ 
+[debug] [2020-03-10T23:00:54.573Z] >>> HTTP REQUEST GET https://firestore.googleapis.com/v1beta2/projects/pairuptravel/databases/(default)/collectionGroups/-/indexes  
+ 
+[debug] [2020-03-10T23:00:54.619Z] Error: getaddrinfo ENOTFOUND firebaserules.googleapis.com
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:60:26)
+[error] 
+[error] Error: Server Error. getaddrinfo ENOTFOUND firebaserules.googleapis.com
