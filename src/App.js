@@ -198,16 +198,17 @@ function MakeTrip(props){
     url += "&tags=" + tagFinal
     url += "&text=" + tagFinal
     url += "&content_type=1"
+    url += "&accuracy=11"
     url += "&media=photos"
-    url += "&per_page=1"
     url += "&geo_context=2"
     url += "&format=json&nojsoncallback=1"
     const info = await fetch(url)
     const plan = await info.json()
-    let imgID = plan["photos"]["photo"][0]["id"]
-    let imgFarmID = plan["photos"]["photo"][0]["farm"]
-    let imgServerID = plan["photos"]["photo"][0]["server"]
-    let imgSecret = plan["photos"]["photo"][0]["secret"]
+    const randomPhoto = (Math.round(Math.random() * 99))
+    let imgID = plan["photos"]["photo"][randomPhoto]["id"]
+    let imgFarmID = plan["photos"]["photo"][randomPhoto]["farm"]
+    let imgServerID = plan["photos"]["photo"][randomPhoto]["server"]
+    let imgSecret = plan["photos"]["photo"][randomPhoto]["secret"]
     let imgUrl = "https://farm" 
     imgUrl += imgFarmID
     imgUrl += ".staticflickr.com/"
