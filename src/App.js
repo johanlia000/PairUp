@@ -99,7 +99,6 @@ function App() {
   useEffect(()=>{
     
     firebase.auth().onAuthStateChanged(function(user) {
-      console.log(user)
       if (user) {
           setUser(user)
           setGlobal({
@@ -134,7 +133,6 @@ function MakeTrip(props){
 
   // this is for setting if the user did not input a city or country
   const [errorCityCountry, seterrorCityCountry] = useState(false)
-  console.log("error city country" + errorCityCountry)
 
   const [activites, addActivity] = useState([])
   const [activity, setActivity] = useState('')
@@ -159,7 +157,6 @@ function MakeTrip(props){
   }; 
 
   async function firebaseMakeTravelPlan(){
-    console.log('inside firebase make travel plan function')
     var url = await GetPhoto(JSON.stringify({city}))
     props.closeTrip()
     let travelPlans = db.collection("travelplans").doc()
@@ -183,7 +180,6 @@ function MakeTrip(props){
         Search: firebase.firestore.FieldValue.arrayUnion(activites[i].toLowerCase())
       });
     }
-    console.log('end of firebase make travel plan')
   }
 
   async function GetPhoto(tag) {
@@ -194,7 +190,6 @@ function MakeTrip(props){
     if (tag4.split(" ").length > 1) {
       tagFinal = tag4.split(" ")[0] + "+" + tag4.split(" ")[1]
     }
-    console.log(tagFinal)
     const key = "2b69d30a533e2e4eb9a09fd0fc84ce32"
     let url = "https://api.flickr.com/services/rest/?method=flickr.photos.search"
     let id=  "187059476@N02"
@@ -224,7 +219,6 @@ function MakeTrip(props){
     imgUrl += "_"
     imgUrl += imgSecret
     imgUrl += ".jpg"
-    console.log(imgUrl)
     return imgUrl
   }
 
@@ -301,7 +295,6 @@ function MakeTrip(props){
         onChange={e=> setCitySearchTerm(e.target.value)}
             onKeyPress={async e=> {
               if(e.key ==='Enter' && citySearchTerm != 0) {
-                console.log("pressed enter " + citySearchTerm)
                 setCity(citySearchTerm)
                 setCitySearchTerm('')
               }
@@ -313,7 +306,6 @@ function MakeTrip(props){
         color="secondary"
         onClick={async ()=> {
           if(citySearchTerm != 0) 
-            console.log('clicked the button: ' + citySearchTerm)
             setCity(citySearchTerm)
             setCitySearchTerm('')
           }}
@@ -331,7 +323,6 @@ function MakeTrip(props){
         onChange={e=> setCountrySearchTerm(e.target.value)}
             onKeyPress={async e=> {
               if(e.key ==='Enter' && countrySearchTerm != 0) {
-                console.log("pressed enter " + countrySearchTerm)
                 setCountry(countrySearchTerm)
                 setCountrySearchTerm('')
               }
@@ -343,7 +334,6 @@ function MakeTrip(props){
         color="secondary"
         onClick={async ()=> {
           if(citySearchTerm != 0) 
-            console.log('clicked the button: ' + countrySearchTerm)
             setCountry(countrySearchTerm)
             setCountrySearchTerm('')
           }}
@@ -362,10 +352,8 @@ function MakeTrip(props){
             onChange={e=> setActivity(e.target.value)}
             onKeyPress={async e=> {
               if(e.key ==='Enter') {
-                console.log('pressed enter' + activity)
                 addActivity(activites => [...activites, activity])
                 setActivity('')
-                console.log(activites)
               }
             }}
         />
@@ -376,10 +364,8 @@ function MakeTrip(props){
           color="secondary"
           onClick={async ()=> {
             if(activity != 0) 
-              console.log('clicked the button: ' + activity)
               addActivity(activites => [...activites, activity])
               setActivity('')
-              console.log(activites)
             }}
         >
           <SearchIcon /> 
@@ -395,7 +381,6 @@ function MakeTrip(props){
         onChange={e=> setNameSearch(e.target.value)}
             onKeyPress={async e=> {
               if(e.key ==='Enter' && nameSearch.length != 0) {
-                console.log("pressed enter " + nameSearch)
                 setName(nameSearch)
                 setNameSearch('')
               }
@@ -407,7 +392,6 @@ function MakeTrip(props){
         color="secondary"
         onClick={async ()=> {
           if(nameSearch.length > 0) 
-            console.log('clicked the button: ' + nameSearch)
             setName(nameSearch)
             setNameSearch('')
           }}
@@ -425,7 +409,6 @@ function MakeTrip(props){
         onChange={e=> setContactSearch(e.target.value)}
             onKeyPress={async e=> {
               if(e.key ==='Enter' && contactSearch.length != 0) {
-                console.log("pressed enter " + contactSearch)
                 setContact(contactSearch)
                 setContactSearch('')
               }
@@ -437,7 +420,6 @@ function MakeTrip(props){
         color="secondary"
         onClick={async ()=> {
           if(contactSearch.length > 0) 
-            console.log('clicked the button: ' + contactSearch)
             setContact(contactSearch)
             setContactSearch('')
           }}
@@ -455,24 +437,13 @@ function MakeTrip(props){
           size="large"
           color="primary"
           onClick={async ()=> {
-            console.log('Clicked the save button')
-            console.log("City: "+ city)
-            console.log(city.length)
-            console.log("Country: "+ country)
-            console.log(country.length)
-            console.log("Activities: "+ activites)
-            console.log("Start Date: "+ selectedStartDate) // this is an object
-            console.log("End Date: "+ selectedEndDate) // this is an object
             if(city.length > 0){ // this works
-              console.log("city > 0")
               seterrorCityCountry(false)
               firebaseMakeTravelPlan()
             } else if (city.length <= 0 && country.length > 0) { // this works
-              console.log("country no city")
               firebaseMakeTravelPlan()
               seterrorCityCountry(false)
             } else if (city.length <=0 && country.length <= 0) {
-              console.log('no city no country')
               // throw an error because they didnt put either
               seterrorCityCountry(true)
             }
@@ -492,7 +463,6 @@ function MakeTripHeader(props){
         color="primary"
         style={{backgroundColor: "#f5365c"}}
         onClick={()=> {
-          console.log('clicked + button to add plan')
           props.closeTrip()
         }}
       >
@@ -508,14 +478,11 @@ function LoginButton(props){
   const [password, setPassword] = useState('')
 
   const [signupErrorValue, setSignupErrorValue] = useState('')
-  console.log(signupErrorValue)
 
   const [signupError, setSignupError] = useState(false)
-  console.log(signupError)
 
   // Sign up and make user on firebase with email and password
   function signUp(){
-    console.log("SIGNUP")
     firebase.auth().createUserWithEmailAndPassword(email, password).then(function(result) {
       setGlobal({
         state: false,
@@ -523,11 +490,9 @@ function LoginButton(props){
       setDialogOpen(false) // close dialog
       setSignupErrorValue('')
       setSignupError(false)
-      console.log("in the error-free branch")
     }).catch(function(error) {
       var errorCode = error.code;
       var errorMessage = error.message;
-      console.log("error: " + error)
       setSignupErrorValue(error.message)
       setSignupError(true)
     })
@@ -542,12 +507,10 @@ function LoginButton(props){
       setDialogOpen(false) // close dialog
       setSignupErrorValue('')
       setSignupError(false)
-      console.log("in the error-free branch")
     }).catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
-      console.log("error: " + error)
       setSignupErrorValue(error.message)
       setSignupError(true)
     });
@@ -590,7 +553,6 @@ function LoginButton(props){
     <Dialog 
       open={dialogOpen}
       onClose={() => {
-        console.log("CLOSE 2")
         setDialogOpen(false)
       }}
       aria-labelledby="simple-dialog-title">
@@ -641,11 +603,8 @@ function LoginButton(props){
             color="primary"
             onClick={async ()=> {
               if(email && password) 
-                console.log(email)
-                console.log(password)
                 setEmail('')
                 setPassword('')
-                console.log("calling signup")
                 signUp()
             }}
           >
@@ -657,8 +616,6 @@ function LoginButton(props){
             color="primary"
             onClick={async ()=> {
               if(email && password) 
-                console.log(email)
-                console.log(password)
                 setEmail('')
                 setPassword('')
                 //setDialogOpen(false)
@@ -678,8 +635,6 @@ function LoginButton(props){
             style={{backgroundColor: "#DB4437", outlineColor:"#DB4437"}}
             onClick={async ()=> {
               if(email && password) 
-                console.log(email)
-                console.log(password)
                 setEmail('')
                 setPassword('')
                 setDialogOpen(false)
@@ -716,7 +671,6 @@ function Header(props) {
 function TaskBar(props){
   function logout(){
     firebase.auth().signOut().then(function() {
-      console.log('successful logout!')
       setGlobal({
         state: true,
       });
@@ -732,7 +686,6 @@ function TaskBar(props){
     size="large"
     style={{backgroundColor: "#f5365c", marginRight:".25rem"}}
     onClick={()=> {
-      console.log('clicked + button to add plan')
       props.openTrip()
     }}
   >
@@ -746,7 +699,6 @@ function TaskBar(props){
     size="large"
     style={{backgroundColor: "#f5365c", marginLeft:".25rem"}}
     onClick={()=> {
-      console.log('clicked logout')
       logout()
     }}
   >
@@ -783,7 +735,6 @@ function SearchBar(props){
       onChange={e=> setText(e.target.value)}
       onKeyPress={async e=> {
         if(e.key ==='Enter') {
-          console.log("pressed enter: "+ text)
           searchTerm = text
           searchedPlans = await queryPlans(searchTerm)
           if (searchedPlans.length === 0) {
@@ -855,8 +806,6 @@ function SearchBar(props){
   };
   const [showDetails, setShowDetails] = useState(false)
   const classes = useStyles();
-  console.log(props.plan)
-
   
 
   return <div>
@@ -866,7 +815,6 @@ function SearchBar(props){
       onClick={() => {
         setShowDetails(true)
         setOpen(true)
-        console.log("clicked")
       }}>
       <CardActionArea>
         <CardMedia
